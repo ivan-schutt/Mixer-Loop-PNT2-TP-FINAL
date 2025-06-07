@@ -16,3 +16,6 @@ deberia pausar el primer sonido, asi se escucha solo un sonido a la vez.
 
 -Arreglar Los directorios de los sonidos, actualmente drums tiene todo.
 
+-Al hacer todos los archivos de 3 minutos, note un pequeño delay al cargar los sonidos, tal ves sea conveniente
+agregar un loading con unos segundos de carga, para que no se note al llegar al menu.
+
