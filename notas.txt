@@ -1,0 +1,18 @@
+Cree el proyecto de cero.
+
+Dependencias que estamos utilizando
+
+Expo - React Native - React Native Elements - React Navigation
+
+
+
+
+------
+
+Bugs:
+
+-Pantalla de sonido deberia reproducir un sonido a la vez. Si uno se esta repodriduciendo, y se toca play en otro,
+deberia pausar el primer sonido, asi se escucha solo un sonido a la vez.
+
+-Arreglar Los directorios de los sonidos, actualmente drums tiene todo.
+
