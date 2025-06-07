@@ -4,8 +4,7 @@ Dependencias que estamos utilizando
 
 Expo - React Native - React Native Elements - React Navigation
 
-
-
+npm i ---force
 
 ------
 
@@ -18,4 +17,30 @@ deberia pausar el primer sonido, asi se escucha solo un sonido a la vez.
 
 -Al hacer todos los archivos de 3 minutos, note un pequeño delay al cargar los sonidos, tal ves sea conveniente
 agregar un loading con unos segundos de carga, para que no se note al llegar al menu.
+
+-WARN  "shadow*" style props are deprecated. Use "boxShadow". 
+
+-WARN  [expo-av]: Expo AV has been deprecated and will be removed in SDK 54. Please use the `expo-audio` and `expo-video` packages to replace the required functionality.
+
+-WARN  [Layout children]: No route named "credentials" exists in nested children: [ '+not-found', 'index', '_sitemap', '(tabs)' ] 
+
+-WARN  props.pointerEvents is deprecated. Use style.pointerEvents 
+
+------
+
+Nuevas Implementaciones:
+
+-Chequear primeras lineas de layout (Credencials). Pasar credencials de screens a expo router.
+
+-Crear servicios de sounds. 
+
+-Refactorizar Context de sounds para que consuma los sonidos del servicio y se los pase a los tabs/screens. 
+
+-Combinar hook y context.
+
+-Implementar metrónomo como un hook.
+
+-Probar loop sincrónico. 
+
+-Implementar botón de REC (?).
 
