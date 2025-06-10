@@ -44,3 +44,9 @@ Nuevas Implementaciones:
 
 -Implementar botón de REC (?).
 
+----------------------------------------
+
+-10/06-
+Se borraron las dependencias de react navigation.
+Generó error. se tuvo que utilizar --force para borrarlas
+
