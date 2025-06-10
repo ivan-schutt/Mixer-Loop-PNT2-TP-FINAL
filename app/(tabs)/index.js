@@ -1,7 +1,7 @@
 import SoundItem from '@/components/sound-item';
 import { useSoundContext } from '@/contexts/SoundContext';
-import { availableSounds } from '@/data/sounds';
-import React from 'react';
+import { getSounds } from '@/services/sounds';
+import { useEffect, useState } from 'react';
 import {
   Alert,
   SafeAreaView,
@@ -14,10 +14,26 @@ import {
 
 export default function HomeScreen() {
   console.log('=== HomeScreen RENDER ===');
-  
+
   // Obtener contexto
   const contextValue = useSoundContext();
   const { selectedSounds, addSound, removeSound, isSoundSelected } = contextValue;
+
+  // Cargar sonidos disponibles
+  const [availableSounds, setAvailableSounds] = useState([]);
+
+  useEffect(() => {
+    const fetchSounds = async () => {
+      try {
+        const sounds = await getSounds(); 
+        setAvailableSounds(sounds);
+      } catch (error) {
+        console.error('Error al obtener sonidos:', error);
+      } 
+    };
+
+    fetchSounds();
+  }, []);
 
   console.log('HomeScreen - Contexto obtenido:', !!contextValue);
   console.log('HomeScreen - selectedSounds:', selectedSounds?.length || 0);
@@ -26,17 +42,17 @@ export default function HomeScreen() {
   const handleToggleSound = (sound) => {
     console.log('=== handleToggleSound ===');
     console.log('Sonido a toggle:', sound.name, 'ID:', sound.id);
-    
+
     try {
       if (isSoundSelected(sound.id)) {
         console.log('Removiendo sonido...');
         removeSound(sound.id);
-       
+
       } else {
         console.log('Agregando sonido...');
         const added = addSound(sound);
         console.log('Resultado:', added);
-        
+
       }
     } catch (error) {
       console.error('Error:', error);
@@ -64,7 +80,7 @@ export default function HomeScreen() {
                   <Text style={styles.selectedText}>{sound.name}</Text>
                   <Text style={styles.selectedCategory}>{sound.category}</Text>
                 </View>
-                <TouchableOpacity 
+                <TouchableOpacity
                   style={styles.removeButton}
                   onPress={() => removeSound(sound.id)}
                 >

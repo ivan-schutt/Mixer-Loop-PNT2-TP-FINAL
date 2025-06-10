@@ -1,5 +1,5 @@
 import { Audio } from 'expo-av';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 const LoopButton = ({ soundData, onSoundChange }) => {
