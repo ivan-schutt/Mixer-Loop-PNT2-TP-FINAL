@@ -18,33 +18,46 @@ deberia pausar el primer sonido, asi se escucha solo un sonido a la vez.
 -Al hacer todos los archivos de 3 minutos, note un pequeño delay al cargar los sonidos, tal ves sea conveniente
 agregar un loading con unos segundos de carga, para que no se note al llegar al menu.
 
+-el boton de limpiar no funciona en Android y Web.
+
 -WARN  "shadow*" style props are deprecated. Use "boxShadow". 
 
 -WARN  [expo-av]: Expo AV has been deprecated and will be removed in SDK 54. Please use the `expo-audio` and `expo-video` packages to replace the required functionality.
 
--WARN  [Layout children]: No route named "credentials" exists in nested children: [ '+not-found', 'index', '_sitemap', '(tabs)' ] 
 
--WARN  props.pointerEvents is deprecated. Use style.pointerEvents 
 
 ------
 
 Nuevas Implementaciones:
+-Autenticación
 
--Chequear primeras lineas de layout (Credencials). Pasar credencials de screens a expo router.
+-Probar expo-audio.
 
--Crear servicios de sounds. 
+-Arreglar la funcion de loop.(Probar loop sincrónico) 
 
--Refactorizar Context de sounds para que consuma los sonidos del servicio y se los pase a los tabs/screens. 
+-implementar el boton de agregar sonidos.
 
 -Combinar hook y context.
 
--Implementar metrónomo como un hook.
-
--Probar loop sincrónico. 
+-Implementar metrónomo como un hook/context.
 
 -Implementar botón de REC (?).
 
+-Implementar un tab para REC.
+
+
+
 ----------------------------------------
+
+
+Consultas Al Profesor:
+-Esta bien manejar todas las pantallas dentro de la carpeta app? Enrelacion a esto, borramos la carpeta screens.
+
+-Deberia ir soundContext dentro de hooks?
+
+- Estaria bien que index dentro de tabs se maneje directamente con el servicio, y con con un context de por medio?
+
+- Está justificado no tener un hook que consuma el servicio, ya que index en este caso, es la unica pantalla que utiliza la lista completa de sonidos.
 
 -10/06-
 Se borraron las dependencias de react navigation.

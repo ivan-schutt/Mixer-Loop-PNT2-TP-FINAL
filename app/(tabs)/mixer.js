@@ -1,8 +1,8 @@
 import LoopButton from "@/components/loop button";
 import { useSoundContext } from "@/contexts/SoundContext";
-import SoundLibraryScreen from "@/screens/SoundLibraryScreen";
 import React, { useState } from "react";
 import { Alert, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import SoundLibraryScreen from "../SoundLibraryScreen";
 
 export default function MixerScreen() {
   const [soundLibraryVisible, setSoundLibraryVisible] = useState(false);

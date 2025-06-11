@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  StyleSheet,
-  Alert,
-  Modal,
-} from 'react-native';
-import { Audio } from 'expo-av';
 import { useSoundContext } from '@/contexts/SoundContext';
+import { Audio } from 'expo-av';
+import React, { useEffect, useState } from 'react';
+import {
+  Alert,
+  FlatList,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 const SoundLibraryScreen = ({ visible, onClose, onSoundSelect }) => {
   const [previewSound, setPreviewSound] = useState(null);

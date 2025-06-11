@@ -25,6 +25,8 @@ export const SoundProvider = ({ children }) => {
     console.log('Agregando sonido al contexto:', sound.name, 'ID:', sound.id);
     console.log('Sonidos antes de agregar:', selectedSounds.length);
     
+    // Verificar si el sonido ya está seleccionado. some es un metodo que se usa para verificar si un elemento existe en un array.
+    //some devuelve un booleano. verifica todos los elementos del array y si alguno coincide con el id del sonido que se esta agregando, retorna true.
     const isAlreadySelected = selectedSounds.some(s => s.id === sound.id);
     if (!isAlreadySelected) {
       setSelectedSounds(prev => {
@@ -46,6 +48,10 @@ export const SoundProvider = ({ children }) => {
     console.log('Sonidos antes de remover:', selectedSounds.length);
     
     setSelectedSounds(prev => {
+      //se utiliza filter para filtrar los elementos del array
+      //lo que estaria haciendo es agregar al nuevo array los elementos que no tengan el id que se esta removiendo. 
+      //por lo tanto, el aray que se devuelve es el mismo array pero sin el elemento que se esta removiendo.      
+
       const newSounds = prev.filter(s => s.id !== soundId);
       console.log('Sonidos después de remover:', newSounds.length);
       console.log('Lista actualizada:', newSounds.map(s => `${s.id}:${s.name}`));

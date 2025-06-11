@@ -77,7 +77,7 @@ const SoundItem = ({
       setIsPlaying(false);
     }
     //onToggleSelection es la función que se ejecuta cuando se selecciona o deselecciona un sonido.
-    //por dentro tiene la funcion handleToggleSound de comescreen o index.js en screens otabs, que es la que se encarga de agregar o quitar el sonido.
+    //por dentro tiene la funcion handleToggleSound de homescreen o index.js en screens o tabs, que es la que se encarga de agregar o quitar el sonido.
     onToggleSelection(sound);
   };
 

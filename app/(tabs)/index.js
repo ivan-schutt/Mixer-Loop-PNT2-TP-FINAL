@@ -22,6 +22,9 @@ export default function HomeScreen() {
   // Cargar sonidos disponibles
   const [availableSounds, setAvailableSounds] = useState([]);
 
+
+  //se ejecuta cuando el componente se monta.
+
   useEffect(() => {
     const fetchSounds = async () => {
       try {
@@ -39,16 +42,20 @@ export default function HomeScreen() {
   console.log('HomeScreen - selectedSounds:', selectedSounds?.length || 0);
   console.log('HomeScreen - addSound function:', typeof addSound);
 
+  //handleToggleSound funciona en relacion al contexto de sound context.
+
   const handleToggleSound = (sound) => {
     console.log('=== handleToggleSound ===');
     console.log('Sonido a toggle:', sound.name, 'ID:', sound.id);
 
     try {
       if (isSoundSelected(sound.id)) {
+        //si el sonido ya esta seleccionado, se remueve.
         console.log('Removiendo sonido...');
         removeSound(sound.id);
 
       } else {
+        //si el sonido no esta seleccionado, se agrega.
         console.log('Agregando sonido...');
         const added = addSound(sound);
         console.log('Resultado:', added);
