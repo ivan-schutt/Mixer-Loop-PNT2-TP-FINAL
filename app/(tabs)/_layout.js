@@ -1,6 +1,6 @@
 import { Tabs } from 'expo-router';
-import React from 'react';
 import { Platform } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { HapticTab } from '@/components/HapticTab';
 import { IconSymbol } from '@/components/ui/IconSymbol';
@@ -12,6 +12,8 @@ export default function TabLayout() {
   const colorScheme = useColorScheme();
 
   return (
+     <SafeAreaView style={{flex: 1}}>
+      
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
@@ -48,5 +50,6 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
+    </SafeAreaView>
   );
 } 

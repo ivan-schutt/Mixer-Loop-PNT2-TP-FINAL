@@ -9,6 +9,7 @@ import { useFonts } from "expo-font";
 import { SplashScreen, Stack, useRouter, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
+import { SafeAreaView } from "react-native";
 import { AuthProvider, useAuth } from "../contexts/AuthContext";
 
 
@@ -27,16 +28,16 @@ function ProtectedLayout() {
     const inAuthGroup = segments[0] === "(auth)";
 
     if (!auth && !inAuthGroup) {
-      router.replace("/login");
+      router.replace("/(auth)");
     } else if (auth && inAuthGroup) {
       router.replace("/(tabs)");
     }
   }, [auth, segments]); 
 
 
-  return <Stack>
-      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+  return <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="(auth)"  />
+      <Stack.Screen name="(tabs)"  />
       <Stack.Screen name="+not-found" />
     </Stack>;
 }
@@ -58,6 +59,7 @@ export default function RootLayout() {
   }
 
   return (
+    <SafeAreaView style={{flex: 1}}>
     <AuthProvider>
       <SoundProvider>
         <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
@@ -66,5 +68,8 @@ export default function RootLayout() {
         </ThemeProvider>
       </SoundProvider>
     </AuthProvider>
+    </SafeAreaView>
   );
 }
+
+

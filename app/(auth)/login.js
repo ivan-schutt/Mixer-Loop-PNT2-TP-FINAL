@@ -4,6 +4,8 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, Text, TextInput } from 'react-native';
 import { useAuth } from '../../contexts/AuthContext';
+import authService from '../../services/authService';
+
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -14,13 +16,16 @@ export default function LoginScreen() {
 
   const handleLogin = () => {
     console.log(`Intentando iniciar sesión con: ${email}`);
+
+    authService.login(email, password).then((response) => {
+      console.log('response', response);
+      setAuth(response);
+    }).catch((error) => {
+      console.log('error', error);
+      alert(error);
+    })
     
-    setAuth({
-      email: email,
-      name: 'Usuario Logueado'
-    });
-    
-  };
+  }
 
   return (
     <LinearGradient
@@ -36,7 +41,7 @@ export default function LoginScreen() {
         placeholderTextColor="#ccc"
         style={styles.input}
         value={email}
-        onChangeText={setEmail}
+        onChangeText={(text) => setEmail(text)}
         keyboardType="email-address"
         autoCapitalize="none"
       />
@@ -46,7 +51,7 @@ export default function LoginScreen() {
         secureTextEntry
         style={styles.input}
         value={password}
-        onChangeText={setPassword}
+        onChangeText={(text) => setPassword(text)}
       />
 
       <Button
