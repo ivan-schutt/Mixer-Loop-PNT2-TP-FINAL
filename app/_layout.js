@@ -9,7 +9,6 @@ import { useFonts } from "expo-font";
 import { SplashScreen, Stack, useRouter, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
-import { SafeAreaView } from "react-native";
 import { AuthProvider, useAuth } from "../contexts/AuthContext";
 
 
@@ -59,7 +58,6 @@ export default function RootLayout() {
   }
 
   return (
-    <SafeAreaView style={{flex: 1}}>
     <AuthProvider>
       <SoundProvider>
         <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
@@ -68,7 +66,6 @@ export default function RootLayout() {
         </ThemeProvider>
       </SoundProvider>
     </AuthProvider>
-    </SafeAreaView>
   );
 }
 
