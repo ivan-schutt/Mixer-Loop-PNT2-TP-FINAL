@@ -17,23 +17,20 @@ const LoopButton = ({ soundData, onSoundChange }) => {
   const loadSound = async (audioFile) => {
     if (isLoadingRef.current) return; // Evitar cargas simultáneas
     isLoadingRef.current = true;
+    setIsLoading(true);
 
     try {
-      setIsLoading(true);
-
       if (Platform.OS === 'web') {
         // Web: Usar AudioContext para precisión en loops
         await cleanupWebSound();
-        if (!audioContextRef.current) {
-          audioContextRef.current = new (window.AudioContext)();
-        }
+        audioContextRef.current ??= new (window.AudioContext)();
 
         const response = await fetch(audioFile.uri || audioFile);
         const arrayBuffer = await response.arrayBuffer();
-        const audioBuffer = await audioContextRef.current.decodeAudioData(arrayBuffer);
-        bufferRef.current = audioBuffer;
+        bufferRef.current = await audioContextRef.current.decodeAudioData(arrayBuffer);
 
       } else {
+        // Móvil: Usar API de expo-av
         await cleanupMobileSound();
         const { sound: audioSound } = await Audio.Sound.createAsync(
           audioFile,
@@ -47,6 +44,7 @@ const LoopButton = ({ soundData, onSoundChange }) => {
           }
         );
         setSound(audioSound);
+
         // Configurar el callback para cuando termine la reproducción
         audioSound.setOnPlaybackStatusUpdate((status) => {
           if (status.isLoaded) {
@@ -111,7 +109,7 @@ const LoopButton = ({ soundData, onSoundChange }) => {
     }
   };
 
-   // Descargar y limpiar sonido móvil si ya había uno
+  // Descargar y limpiar sonido móvil si ya había uno
   const cleanupMobileSound = async () => {
     if (sound) {
       try {
@@ -130,19 +128,10 @@ const LoopButton = ({ soundData, onSoundChange }) => {
   // Limpiar audio web si estaba sonando
   const cleanupWebSound = async () => {
     try {
-      if (sourceRef.current) {
-        try {
-          sourceRef.current.stop();
-        } catch (e) {
-          console.warn('sourceRef ya detenido o no pudo detenerse:', e.message);
-        }
-        try {
-          sourceRef.current.disconnect();
-        } catch (e) {
-          console.warn('Error desconectando source:', e.message);
-        }
-        sourceRef.current = null;
-      }
+      // Detener fuente si existe
+      sourceRef.current?.stop?.();
+      sourceRef.current?.disconnect?.();
+      sourceRef.current = null;
 
       bufferRef.current = null;
 
@@ -153,10 +142,10 @@ const LoopButton = ({ soundData, onSoundChange }) => {
         });
         audioContextRef.current = new (window.AudioContext)();
       }
-
     } catch (err) {
       console.warn('Error limpiando WebAudio:', err);
     }
+
     setIsPlaying(false);
     setIsLoading(false);
   };
@@ -164,7 +153,7 @@ const LoopButton = ({ soundData, onSoundChange }) => {
   // Cargar el audio si cambia
   useEffect(() => {
     const resetSound = async () => {
-      if (soundData && soundData.file) {
+      if (soundData?.file) {
         await loadSound(soundData.file);
       } else {
         // Se limpió soundData: detener sonido + limpiar visual
@@ -181,8 +170,6 @@ const LoopButton = ({ soundData, onSoundChange }) => {
 
     resetSound();
   }, [soundData]);
-
-
 
   // Audio session para móviles
   useEffect(() => {
@@ -204,7 +191,6 @@ const LoopButton = ({ soundData, onSoundChange }) => {
         cleanupMobileSound();
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getButtonStyle = () => {
@@ -284,3 +270,4 @@ const styles = StyleSheet.create({
 });
 
 export default LoopButton;
+
