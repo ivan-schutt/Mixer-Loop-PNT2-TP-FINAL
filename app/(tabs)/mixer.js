@@ -1,4 +1,4 @@
-import LoopButton from "@/components/loop button";
+import LoopButton from "@/components/loop-button";
 import { useSoundContext } from "@/contexts/SoundContext";
 import React, { useState } from "react";
 import { Alert, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
