@@ -1,42 +1,61 @@
 import { Audio } from 'expo-av';
-import { useEffect, useState } from 'react';
-import { Alert, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Alert, Platform, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 const LoopButton = ({ soundData, onSoundChange }) => {
-  const [sound, setSound] = useState(null);
+  const [sound, setSound] = useState(null); // Para móviles
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Refs para Web Audio
+  const audioContextRef = useRef(null);
+  const bufferRef = useRef(null);
+  const sourceRef = useRef(null);
 
   // Cargar el archivo de audio
   const loadSound = async (audioFile) => {
     try {
       setIsLoading(true);
-      
-      // Si hay un sonido anterior, descargarlo
-      if (sound) {
+
+      // Si hay un sonido anterior, descargarlo (solo móvil)
+      if (Platform.OS !== 'web' && sound) {
         await sound.unloadAsync();
       }
 
-      const { sound: audioSound } = await Audio.Sound.createAsync(
-        audioFile,
-        {
-          shouldPlay: false,
-          isLooping: true,
-          volume: 1.0,
-          rate: 1.0,                    // Velocidad normal
-          shouldCorrectPitch: true,     // Mantiene pitch correcto
-          pitchCorrectionQuality: Audio.PitchCorrectionQuality.High,
+      if (Platform.OS === 'web') {
+        // Web: Usar AudioContext para precisión en loops
+        if (!audioContextRef.current) {
+          audioContextRef.current = new (window.AudioContext)();
         }
-      );
-      setSound(audioSound);
-      
-      // Configurar el callback para cuando termine la reproducción
-      audioSound.setOnPlaybackStatusUpdate((status) => {
-        if (status.isLoaded) {
-          setIsPlaying(status.isPlaying || false);
-        }
-      });
-      
+
+        const response = await fetch(audioFile.uri || audioFile);
+        const arrayBuffer = await response.arrayBuffer();
+        const audioBuffer = await audioContextRef.current.decodeAudioData(arrayBuffer);
+        bufferRef.current = audioBuffer;
+
+      } else {
+        // Móvil: usar expo-av
+        const { sound: audioSound } = await Audio.Sound.createAsync(
+          audioFile,
+          {
+            shouldPlay: false,
+            isLooping: true,
+            volume: 1.0,
+            rate: 1.0,                    // Velocidad normal
+            shouldCorrectPitch: true,     // Mantiene pitch correcto
+            pitchCorrectionQuality: Audio.PitchCorrectionQuality.High,
+          }
+        );
+        setSound(audioSound);
+
+        // Configurar el callback para cuando termine la reproducción
+        audioSound.setOnPlaybackStatusUpdate((status) => {
+          if (status.isLoaded) {
+            setIsPlaying(status.isPlaying || false);
+          }
+        });
+      }
+
     } catch (error) {
       console.error('Error cargando el audio:', error);
       Alert.alert('Error', 'No se pudo cargar el archivo de audio');
@@ -47,25 +66,56 @@ const LoopButton = ({ soundData, onSoundChange }) => {
 
   // Función para reproducir/pausar el audio
   const togglePlayback = async () => {
-    if (!sound) {
-      // Si no hay sonido asignado, abrir selector
-      if (onSoundChange) {
-        onSoundChange();
-      } else {
-        Alert.alert('Sin sonido', 'No hay ningún sonido asignado a este botón');
+    if (Platform.OS === 'web') {
+      // Web
+      if (!bufferRef.current || !audioContextRef.current) {
+        if (onSoundChange) {
+          onSoundChange();
+        } else {
+          Alert.alert('Sin sonido', 'No hay ningún sonido asignado');
+        }
+        return;
       }
-      return;
-    }
 
-    try {
       if (isPlaying) {
-        await sound.stopAsync();
+        if (sourceRef.current) {
+          sourceRef.current.stop(0);
+          sourceRef.current.disconnect();
+          sourceRef.current = null;
+        }
+        setIsPlaying(false);
       } else {
-        await sound.playAsync();
+        const source = audioContextRef.current.createBufferSource();
+        source.buffer = bufferRef.current;
+        source.loop = true;
+        source.connect(audioContextRef.current.destination);
+        source.start(0);
+        sourceRef.current = source;
+        setIsPlaying(true);
       }
-    } catch (error) {
-      console.error('Error controlando la reproducción:', error);
-      Alert.alert('Error', 'No se pudo controlar la reproducción');
+
+    } else {
+      // Móvil
+      if (!sound) {
+        // Si no hay sonido asignado, abrir selector
+        if (onSoundChange) {
+          onSoundChange();
+        } else {
+          Alert.alert('Sin sonido', 'No hay ningún sonido asignado a este botón');
+        }
+        return;
+      }
+
+      try {
+        if (isPlaying) {
+          await sound.stopAsync();
+        } else {
+          await sound.playAsync();
+        }
+      } catch (error) {
+        console.error('Error controlando la reproducción:', error);
+        Alert.alert('Error', 'No se pudo controlar la reproducción');
+      }
     }
   };
 
@@ -76,20 +126,29 @@ const LoopButton = ({ soundData, onSoundChange }) => {
     }
   }, [soundData]);
 
-  // Configurar audio session al montar
+  // Configurar audio session al montar (solo móvil)
   useEffect(() => {
-    Audio.setAudioModeAsync({
-      allowsRecordingIOS: false,
-      staysActiveInBackground: false,
-      playsInSilentModeIOS: true,
-      shouldDuckAndroid: true,
-      playThroughEarpieceAndroid: false,
-    });
+    if (Platform.OS !== 'web') {
+      Audio.setAudioModeAsync({
+        allowsRecordingIOS: false,
+        staysActiveInBackground: false,
+        playsInSilentModeIOS: true,
+        shouldDuckAndroid: true,
+        playThroughEarpieceAndroid: false,
+      });
+    }
 
     // Limpiar al desmontar el componente
     return () => {
-      if (sound) {
-        sound.unloadAsync();
+      if (Platform.OS === 'web') {
+        if (sourceRef.current) {
+          sourceRef.current.stop(0);
+          sourceRef.current.disconnect();
+        }
+      } else {
+        if (sound) {
+          sound.unloadAsync();
+        }
       }
     };
   }, []);
@@ -170,4 +229,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LoopButton; 
+export default LoopButton;
