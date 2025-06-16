@@ -11,19 +11,19 @@ const LoopButton = ({ soundData, onSoundChange }) => {
   const audioContextRef = useRef(null);
   const bufferRef = useRef(null);
   const sourceRef = useRef(null);
+  const isLoadingRef = useRef(false);
 
   // Cargar el archivo de audio
   const loadSound = async (audioFile) => {
+    if (isLoadingRef.current) return; // Evitar cargas simultáneas
+    isLoadingRef.current = true;
+
     try {
       setIsLoading(true);
 
-      // Si hay un sonido anterior, descargarlo (solo móvil)
-      if (Platform.OS !== 'web' && sound) {
-        await sound.unloadAsync();
-      }
-
       if (Platform.OS === 'web') {
         // Web: Usar AudioContext para precisión en loops
+        await cleanupWebSound();
         if (!audioContextRef.current) {
           audioContextRef.current = new (window.AudioContext)();
         }
@@ -34,20 +34,19 @@ const LoopButton = ({ soundData, onSoundChange }) => {
         bufferRef.current = audioBuffer;
 
       } else {
-        // Móvil: usar expo-av
+        await cleanupMobileSound();
         const { sound: audioSound } = await Audio.Sound.createAsync(
           audioFile,
           {
             shouldPlay: false,
             isLooping: true,
-            volume: 1.0,
-            rate: 1.0,                    // Velocidad normal
-            shouldCorrectPitch: true,     // Mantiene pitch correcto
+            volume: 1.0, // Velocidad normal
+            rate: 1.0, // Mantiene pitch correcto
+            shouldCorrectPitch: true,
             pitchCorrectionQuality: Audio.PitchCorrectionQuality.High,
           }
         );
         setSound(audioSound);
-
         // Configurar el callback para cuando termine la reproducción
         audioSound.setOnPlaybackStatusUpdate((status) => {
           if (status.isLoaded) {
@@ -55,12 +54,12 @@ const LoopButton = ({ soundData, onSoundChange }) => {
           }
         });
       }
-
     } catch (error) {
       console.error('Error cargando el audio:', error);
       Alert.alert('Error', 'No se pudo cargar el archivo de audio');
     } finally {
       setIsLoading(false);
+      isLoadingRef.current = false;
     }
   };
 
@@ -69,20 +68,12 @@ const LoopButton = ({ soundData, onSoundChange }) => {
     if (Platform.OS === 'web') {
       // Web
       if (!bufferRef.current || !audioContextRef.current) {
-        if (onSoundChange) {
-          onSoundChange();
-        } else {
-          Alert.alert('Sin sonido', 'No hay ningún sonido asignado');
-        }
+        onSoundChange?.();
         return;
       }
 
       if (isPlaying) {
-        if (sourceRef.current) {
-          sourceRef.current.stop(0);
-          sourceRef.current.disconnect();
-          sourceRef.current = null;
-        }
+        await cleanupWebSound();
         setIsPlaying(false);
       } else {
         const source = audioContextRef.current.createBufferSource();
@@ -97,17 +88,18 @@ const LoopButton = ({ soundData, onSoundChange }) => {
     } else {
       // Móvil
       if (!sound) {
-        // Si no hay sonido asignado, abrir selector
-        if (onSoundChange) {
-          onSoundChange();
-        } else {
-          Alert.alert('Sin sonido', 'No hay ningún sonido asignado a este botón');
-        }
+        onSoundChange?.();
         return;
       }
 
       try {
-        if (isPlaying) {
+        const status = await sound.getStatusAsync();
+        if (!status.isLoaded) {
+          Alert.alert('Error', 'El sonido no está cargado todavía');
+          return;
+        }
+
+        if (status.isPlaying) {
           await sound.stopAsync();
         } else {
           await sound.playAsync();
@@ -119,14 +111,80 @@ const LoopButton = ({ soundData, onSoundChange }) => {
     }
   };
 
-  // Cargar el audio cuando cambie soundData
-  useEffect(() => {
-    if (soundData && soundData.file) {
-      loadSound(soundData.file);
+   // Descargar y limpiar sonido móvil si ya había uno
+  const cleanupMobileSound = async () => {
+    if (sound) {
+      try {
+        const status = await sound.getStatusAsync();
+        if (status.isLoaded) {
+          if (status.isPlaying) await sound.stopAsync();
+          await sound.unloadAsync();
+        }
+      } catch (e) {
+        console.warn('Error limpiando sonido anterior:', e);
+      }
     }
+    setSound(null);
+  };
+
+  // Limpiar audio web si estaba sonando
+  const cleanupWebSound = async () => {
+    try {
+      if (sourceRef.current) {
+        try {
+          sourceRef.current.stop();
+        } catch (e) {
+          console.warn('sourceRef ya detenido o no pudo detenerse:', e.message);
+        }
+        try {
+          sourceRef.current.disconnect();
+        } catch (e) {
+          console.warn('Error desconectando source:', e.message);
+        }
+        sourceRef.current = null;
+      }
+
+      bufferRef.current = null;
+
+      if (audioContextRef.current) {
+        // Cerramos el contexto actual y creamos uno nuevo para limpiar todo
+        await audioContextRef.current.close().catch((err) => {
+          console.warn('Error cerrando audioContext:', err);
+        });
+        audioContextRef.current = new (window.AudioContext)();
+      }
+
+    } catch (err) {
+      console.warn('Error limpiando WebAudio:', err);
+    }
+    setIsPlaying(false);
+    setIsLoading(false);
+  };
+
+  // Cargar el audio si cambia
+  useEffect(() => {
+    const resetSound = async () => {
+      if (soundData && soundData.file) {
+        await loadSound(soundData.file);
+      } else {
+        // Se limpió soundData: detener sonido + limpiar visual
+        if (Platform.OS === 'web') {
+          cleanupWebSound();
+        } else {
+          await cleanupMobileSound();
+        }
+
+        // Forzar actualización visual
+        setIsPlaying(false);
+      }
+    };
+
+    resetSound();
   }, [soundData]);
 
-  // Configurar audio session al montar (solo móvil)
+
+
+  // Audio session para móviles
   useEffect(() => {
     if (Platform.OS !== 'web') {
       Audio.setAudioModeAsync({
@@ -141,16 +199,12 @@ const LoopButton = ({ soundData, onSoundChange }) => {
     // Limpiar al desmontar el componente
     return () => {
       if (Platform.OS === 'web') {
-        if (sourceRef.current) {
-          sourceRef.current.stop(0);
-          sourceRef.current.disconnect();
-        }
+        cleanupWebSound();
       } else {
-        if (sound) {
-          sound.unloadAsync();
-        }
+        cleanupMobileSound();
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getButtonStyle = () => {
@@ -163,8 +217,7 @@ const LoopButton = ({ soundData, onSoundChange }) => {
   const getButtonText = () => {
     if (isLoading) return '...';
     if (!soundData) return '+';
-    if (isPlaying) return '⏸';
-    return '▶';
+    return isPlaying ? '⏸' : '▶';
   };
 
   return (
@@ -172,6 +225,7 @@ const LoopButton = ({ soundData, onSoundChange }) => {
       style={[styles.button, getButtonStyle()]}
       onPress={togglePlayback}
       disabled={isLoading}
+      accessibilityLabel={soundData ? `Botón de sonido ${soundData.name}` : 'Botón sin sonido asignado'}
     >
       <Text style={styles.buttonText}>
         {getButtonText()}

@@ -1,14 +1,14 @@
 import LoopButton from "@/components/loop button";
 import { useSoundContext } from "@/contexts/SoundContext";
 import React, { useState } from "react";
-import { Alert, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import SoundLibraryScreen from "../SoundLibraryScreen";
 
 export default function MixerScreen() {
   const [soundLibraryVisible, setSoundLibraryVisible] = useState(false);
   const [selectedButtonIndex, setSelectedButtonIndex] = useState(null);
   const [buttonSounds, setButtonSounds] = useState([null, null, null, null]);
-  
+
   // Usar el contexto
   const { selectedSounds } = useSoundContext();
 
@@ -19,16 +19,16 @@ export default function MixerScreen() {
   const handleSoundChange = (buttonIndex) => {
     console.log('Abriendo biblioteca para botón:', buttonIndex);
     console.log('Sonidos disponibles para seleccionar:', selectedSounds.length);
-    
+
     if (selectedSounds.length === 0) {
       Alert.alert(
-        'Sin sonidos', 
+        'Sin sonidos',
         'Primero ve al tab "Home" y selecciona algunos sonidos para poder usarlos aquí.',
         [{ text: 'OK' }]
       );
       return;
     }
-    
+
     setSelectedButtonIndex(buttonIndex);
     setSoundLibraryVisible(true);
   };
@@ -47,6 +47,14 @@ export default function MixerScreen() {
   };
 
   const clearButton = (buttonIndex) => {
+    if (Platform.OS === 'web') {
+      const newButtonSounds = [...buttonSounds];
+      newButtonSounds[buttonIndex] = null;
+      setButtonSounds(newButtonSounds);
+      console.log('Botón limpiado (web):', buttonIndex);
+      return;
+    }
+
     Alert.alert(
       'Limpiar botón',
       '¿Estás seguro de que quieres quitar el sonido de este botón?',
@@ -58,12 +66,13 @@ export default function MixerScreen() {
             const newButtonSounds = [...buttonSounds];
             newButtonSounds[buttonIndex] = null;
             setButtonSounds(newButtonSounds);
-            console.log('Botón limpiado:', buttonIndex);
+            console.log('Botón limpiado (móvil):', buttonIndex);
           },
         },
       ]
     );
   };
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -152,7 +161,7 @@ export default function MixerScreen() {
   );
 }
 
-const styles = StyleSheet.create({          
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f8f9fa',

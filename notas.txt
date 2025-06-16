@@ -4,8 +4,6 @@ Dependencias que estamos utilizando
 
 Expo - React Native - React Native Elements - React Navigation
 
-npm i ---force
-
 ------
 
 Bugs:
@@ -18,22 +16,17 @@ deberia pausar el primer sonido, asi se escucha solo un sonido a la vez.
 -Al hacer todos los archivos de 3 minutos, note un pequeño delay al cargar los sonidos, tal ves sea conveniente
 agregar un loading con unos segundos de carga, para que no se note al llegar al menu.
 
--el boton de limpiar no funciona en Android y Web.
-
 -WARN  "shadow*" style props are deprecated. Use "boxShadow". 
 
 -WARN  [expo-av]: Expo AV has been deprecated and will be removed in SDK 54. Please use the `expo-audio` and `expo-video` packages to replace the required functionality.
 
-
-
 ------
 
 Nuevas Implementaciones:
--Autenticación
 
--Probar expo-audio.
+-Autenticación en el Tab Mixer (?)
 
--Arreglar la funcion de loop.(Probar loop sincrónico) 
+-Probar expo-audio. (Esto era para el function loop y la librería que usa es Expo-av)
 
 -implementar el boton de agregar sonidos.
 
@@ -45,10 +38,7 @@ Nuevas Implementaciones:
 
 -Implementar un tab para REC.
 
-
-
 ----------------------------------------
-
 
 Consultas Al Profesor:
 -Esta bien manejar todas las pantallas dentro de la carpeta app? Enrelacion a esto, borramos la carpeta screens.
