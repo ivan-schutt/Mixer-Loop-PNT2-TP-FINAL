@@ -1,7 +1,7 @@
 import LoopButton from "@/components/loop-button";
 import { useSoundContext } from "@/contexts/SoundContext";
 import React, { useState } from "react";
-import { Alert, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import SoundLibraryScreen from "../SoundLibraryScreen";
 
 export default function MixerScreen() {
@@ -40,22 +40,22 @@ export default function MixerScreen() {
       newButtonSounds[selectedButtonIndex] = sound;
       setButtonSounds(newButtonSounds);
       console.log('Nuevos sonidos de botones:', newButtonSounds);
-      Alert.alert('Sonido asignado', `${sound.name} asignado al botón ${selectedButtonIndex + 1}`);
+      //Alert.alert('Sonido asignado', `${sound.name} asignado al botón ${selectedButtonIndex + 1}`);
     }
     setSoundLibraryVisible(false);
     setSelectedButtonIndex(null);
   };
 
   const clearButton = (buttonIndex) => {
-    if (Platform.OS === 'web') {
+    //if (Platform.OS === 'web') {
       const newButtonSounds = [...buttonSounds];
       newButtonSounds[buttonIndex] = null;
       setButtonSounds(newButtonSounds);
-      console.log('Botón limpiado (web):', buttonIndex);
+      console.log('Botón limpiado:', buttonIndex);
       return;
-    }
+    // }
 
-    Alert.alert(
+/*     Alert.alert(
       'Limpiar botón',
       '¿Estás seguro de que quieres quitar el sonido de este botón?',
       [
@@ -70,9 +70,8 @@ export default function MixerScreen() {
           },
         },
       ]
-    );
+    ) */;
   };
-
 
   return (
     <SafeAreaView style={styles.container}>
