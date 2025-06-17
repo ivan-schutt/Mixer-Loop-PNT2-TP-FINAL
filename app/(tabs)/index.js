@@ -1,3 +1,4 @@
+import ButtonUpload from '@/components/buttonUpload/ButtonUpload';
 import SoundItem from '@/components/sound-item';
 import { useSoundContext } from '@/contexts/SoundContext';
 import { getSounds } from '@/services/sounds';
@@ -97,6 +98,8 @@ export default function HomeScreen() {
             ))}
           </View>
         )}
+
+        <ButtonUpload />
 
         {/* Lista de todos los sonidos usando el componente SoundItem */}
         <View style={styles.availableSection}>
