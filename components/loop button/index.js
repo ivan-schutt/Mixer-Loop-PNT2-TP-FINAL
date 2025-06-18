@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity } from "react-native";
 
 const LoopButton = ({ soundData, onSoundChange }) => {
-  const { addActiveTrack, removeActiveTrack,currentCount} = useAudioSyncContext();
+  const { addActiveTrack, removeActiveTrack, currentCount } = useAudioSyncContext();
   const [sound, setSound] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -22,7 +22,6 @@ const LoopButton = ({ soundData, onSoundChange }) => {
   //en principio que queria aplicar use effect con condicional del esitlo, shouldListen ? [currentCount] : []); 
   //para que solo se ejecute cuando se ncesite, pero use effect de esa forma tendria que usarse en funciones separadas y eso
   // no es posible, useEffect solo se puede usar en el componente principal, despues analizamos posibles soluciones
-
   useEffect(() => {
     if (currentCount === 1 && shouldListen && isPlayingOnSync === false && cuedForPlayback === true) {
       sound.playAsync();
@@ -33,7 +32,47 @@ const LoopButton = ({ soundData, onSoundChange }) => {
       setIsPlayingOnSync(false);
       setShouldListen(false);
     }
-   }, [currentCount, shouldListen]); 
+  }, [currentCount, shouldListen]);
+
+    // Cargar el audio cuando cambie soundData. Si no hay soundData, limpiar el sonido actual.
+  // Si el sonido es borrado de este componente, se detiene la reproducción y deja el espacio para seleccionar otro sonido.
+  useEffect(() => {
+    const cleanupSound = async () => {
+      if (sound) {
+        await sound.unloadAsync();
+        stopPlayback();
+        setSound(null);
+        setIsPlaying(false);
+        setCuedForPlayback(false);
+        setShouldListen(false);
+        setIsPlayingOnSync(false);
+      }
+    };
+
+    if (soundData && soundData.file) {
+      loadSound(soundData.file);
+    } else {
+      cleanupSound();
+    }
+  }, [soundData]);
+
+  // Configurar audio session al montar
+  useEffect(() => {
+    Audio.setAudioModeAsync({
+      allowsRecordingIOS: false,
+      staysActiveInBackground: false,
+      playsInSilentModeIOS: true,
+      shouldDuckAndroid: true,
+      playThroughEarpieceAndroid: false,
+    });
+
+    // Limpiar al desmontar el componente
+    return () => {
+      if (sound) {
+        sound.unloadAsync();
+      }
+    };
+  }, []);
 
   // Cargar el archivo de audio
   const loadSound = async (audioFile) => {
@@ -98,52 +137,18 @@ const LoopButton = ({ soundData, onSoundChange }) => {
   //Limpiar toda esta logica a futuro.
   //la idea es que por un tema de eficiencia, solo cuando se haya querido hacer play o stop, el componente comienze a raccionar al contador
   //de esta manera, no estan todos los componentes prestando atencion al contador todo el tiempo, sino solo cuando se necesite.
-
   const startPlayback = () => {
     console.log("startPlayback ejecutado");
-    
-    
-    addActiveTrack();    
-    setCuedForPlayback(true);    
+    addActiveTrack();
+    setCuedForPlayback(true);
     setShouldListen(true);
-   
   };
 
   const stopPlayback = () => {
     removeActiveTrack();
     setShouldListen(true);
     setCuedForPlayback(false);
-   
-   
   };
-
-
-
-
-  // Cargar el audio cuando cambie soundData
-  useEffect(() => {
-    if (soundData && soundData.file) {
-      loadSound(soundData.file);
-    }
-  }, [soundData]);
-
-  // Configurar audio session al montar
-  useEffect(() => {
-    Audio.setAudioModeAsync({
-      allowsRecordingIOS: false,
-      staysActiveInBackground: false,
-      playsInSilentModeIOS: true,
-      shouldDuckAndroid: true,
-      playThroughEarpieceAndroid: false,
-    });
-
-    // Limpiar al desmontar el componente
-    return () => {
-      if (sound) {
-        sound.unloadAsync();
-      }
-    };
-  }, []);
 
   const getButtonStyle = () => {
     if (isLoading) return styles.disabledButton;

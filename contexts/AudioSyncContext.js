@@ -41,41 +41,22 @@ export const AudioSyncProvider = ({ children }) => {
   //Me parece que esto lo podermos implementar mejor, en caso de que nos sirva podriamos tanto ir guardando ids
   // de los botones activos, o desarollar algo utilizando useEffect. Evaluemos esto luego de que implement los nuevos
   //cambios.
-
   const activeTracks = useRef(0);
 
   //intervalo para poder controlar el contador
   const intervalRef = useRef(null);
 
-  const addActiveTrack = () => {
-    if (activeTracks.current === 0) {
-      startSync();
-    }
-    activeTracks.current++;
-  };
-
-  const removeActiveTrack = () => {
-    if (activeTracks.current === 1) {
-      stopSync();
-    } else if (activeTracks.current !== 0) {
-      //valido por las dudas, si manejamos todo bien en loop botton no deberia ser necesario.
-      activeTracks.current--;
-    }
-  };
-
   const startSync = () => {
     setIsPlaying(true);
     intervalRef.current = setInterval(() => {
       setCurrentCount(prev => {
-        
         let newCount = prev + 1;
-        
-                
+
         if (newCount > BEATS_PER_BAR) {
           currentBar.current++;
           newCount = 1;
         }
-        
+
         return newCount;
       });
     }, BEAT_DURATION);
@@ -98,8 +79,38 @@ export const AudioSyncProvider = ({ children }) => {
     currentBar.current = 1;
   };
 
+  const addActiveTrack = () => {
+    //cuando se reproduce un track, simplemente incrementa el contador
+    activeTracks.current++;
+
+    if (activeTracks.current === 1 && !intervalRef.current) {
+      startSync();
+    }
+  };
+
+  const removeActiveTrack = () => {
+    if (activeTracks.current > 0) {
+      activeTracks.current--;
+
+      if (activeTracks.current === 0) {
+        //cuando se retire el último track se detiene y reinicia
+        stopSync();
+      }
+    }
+  };
+
   return (
-    <AudioSyncContext.Provider value={{ isPlaying, currentCount, beats, currentBar, activeTracks, addActiveTrack, removeActiveTrack }}>
+    <AudioSyncContext.Provider
+      value={{
+        isPlaying,
+        currentCount,
+        beats,
+        currentBar,
+        activeTracks,
+        addActiveTrack,
+        removeActiveTrack
+      }}
+    >
       {children}
     </AudioSyncContext.Provider>
   );

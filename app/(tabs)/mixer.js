@@ -9,7 +9,7 @@ export default function MixerScreen() {
   const [soundLibraryVisible, setSoundLibraryVisible] = useState(false);
   const [selectedButtonIndex, setSelectedButtonIndex] = useState(null);
   const [buttonSounds, setButtonSounds] = useState([null, null, null, null]);
-  
+
   // Usar el contexto
   const { selectedSounds } = useSoundContext();
 
@@ -20,16 +20,16 @@ export default function MixerScreen() {
   const handleSoundChange = (buttonIndex) => {
     console.log('Abriendo biblioteca para botón:', buttonIndex);
     console.log('Sonidos disponibles para seleccionar:', selectedSounds.length);
-    
+
     if (selectedSounds.length === 0) {
       Alert.alert(
-        'Sin sonidos', 
+        'Sin sonidos',
         'Primero ve al tab "Home" y selecciona algunos sonidos para poder usarlos aquí.',
         [{ text: 'OK' }]
       );
       return;
     }
-    
+
     setSelectedButtonIndex(buttonIndex);
     setSoundLibraryVisible(true);
   };
@@ -41,29 +41,17 @@ export default function MixerScreen() {
       newButtonSounds[selectedButtonIndex] = sound;
       setButtonSounds(newButtonSounds);
       console.log('Nuevos sonidos de botones:', newButtonSounds);
-      Alert.alert('Sonido asignado', `${sound.name} asignado al botón ${selectedButtonIndex + 1}`);
+      // Alert.alert('Sonido asignado', `${sound.name} asignado al botón ${selectedButtonIndex + 1}`);
     }
     setSoundLibraryVisible(false);
     setSelectedButtonIndex(null);
   };
 
   const clearButton = (buttonIndex) => {
-    Alert.alert(
-      'Limpiar botón',
-      '¿Estás seguro de que quieres quitar el sonido de este botón?',
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Limpiar',
-          onPress: () => {
-            const newButtonSounds = [...buttonSounds];
-            newButtonSounds[buttonIndex] = null;
-            setButtonSounds(newButtonSounds);
-            console.log('Botón limpiado:', buttonIndex);
-          },
-        },
-      ]
-    );
+    const newButtonSounds = [...buttonSounds];
+    newButtonSounds[buttonIndex] = null;
+    setButtonSounds(newButtonSounds);
+    console.log('Botón limpiado:', buttonIndex);
   };
 
   return (
@@ -98,6 +86,7 @@ export default function MixerScreen() {
               <LoopButton
                 soundData={buttonSounds[1]}
                 onSoundChange={() => handleSoundChange(1)}
+                onClear={() => clearButton(0)}
               />
               <TouchableOpacity
                 style={[styles.clearButton, !buttonSounds[1] && styles.disabledClearButton]}
@@ -114,6 +103,7 @@ export default function MixerScreen() {
               <LoopButton
                 soundData={buttonSounds[2]}
                 onSoundChange={() => handleSoundChange(2)}
+                onClear={() => clearButton(0)}
               />
               <TouchableOpacity
                 style={[styles.clearButton, !buttonSounds[2] && styles.disabledClearButton]}
@@ -128,6 +118,7 @@ export default function MixerScreen() {
               <LoopButton
                 soundData={buttonSounds[3]}
                 onSoundChange={() => handleSoundChange(3)}
+                onClear={() => clearButton(0)}
               />
               <TouchableOpacity
                 style={[styles.clearButton, !buttonSounds[3] && styles.disabledClearButton]}
@@ -154,7 +145,7 @@ export default function MixerScreen() {
   );
 }
 
-const styles = StyleSheet.create({          
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f8f9fa',
