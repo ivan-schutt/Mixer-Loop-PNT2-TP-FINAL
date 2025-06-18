@@ -1,10 +1,6 @@
-Cree el proyecto de cero.
+Dependencias que estamos utilizando:
 
-Dependencias que estamos utilizando
-
-Expo - React Native - React Native Elements - React Navigation
-
-npm i ---force
+Expo - React Native - React Native Elements - React Navigation - expo-av
 
 ------
 
@@ -24,40 +20,35 @@ agregar un loading con unos segundos de carga, para que no se note al llegar al 
 
 -WARN  [expo-av]: Expo AV has been deprecated and will be removed in SDK 54. Please use the `expo-audio` and `expo-video` packages to replace the required functionality.
 
-
-
 ------
 
 Nuevas Implementaciones:
--Autenticación
 
--Probar expo-audio.
+-Autenticación - PathName.
 
--Arreglar la funcion de loop.(Probar loop sincrónico) 
+-Integrar botón de limpiar para web y android. 
 
 -implementar el boton de agregar sonidos.
 
 -Combinar hook y context.
 
--Implementar metrónomo como un hook/context.
+-Implementar metrónomo/sync como un hook/context.
 
--Implementar botón de REC (?).
+-Implementar botón de REC para la sesión general.
 
--Implementar un tab para REC.
+-Implementar botón de REC para mic. 
 
+-Implementar componente de metrónomo visual. 
 
+-Implementar SplashScreen.
+
+-Implementar en el componente Sound-Item un botón de edición. 
 
 ----------------------------------------
 
-
 Consultas Al Profesor:
--Esta bien manejar todas las pantallas dentro de la carpeta app? Enrelacion a esto, borramos la carpeta screens.
 
 -Deberia ir soundContext dentro de hooks?
-
-- Estaria bien que index dentro de tabs se maneje directamente con el servicio, y con con un context de por medio?
-
-- Está justificado no tener un hook que consuma el servicio, ya que index en este caso, es la unica pantalla que utiliza la lista completa de sonidos.
 
 -10/06-
 Se borraron las dependencias de react navigation.

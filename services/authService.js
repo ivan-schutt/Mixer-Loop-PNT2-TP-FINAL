@@ -3,8 +3,6 @@ const AUTH_KEY = '@auth_data';
 const login = (email, password) => {
   return new Promise((resolve, reject) => {
     // TODO: Llamar a la API de login cuando la tengan implementada.
-
-
     setTimeout(() => {
       const shouldLogin = email.toString().toLowerCase() === 'admin' && password.toString() === '123456';
       if (shouldLogin) {
