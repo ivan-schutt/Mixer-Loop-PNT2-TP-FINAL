@@ -1,6 +1,7 @@
-import LoopButton from "@/components/loop button";
+import LoopButton from "@/components/loop-button";
+import MicRecButton from "@/components/MicRecButton";
 import { useSoundContext } from "@/contexts/SoundContext";
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import SoundLibraryScreen from "../SoundLibraryScreen";
 
@@ -8,27 +9,27 @@ export default function MixerScreen() {
   const [soundLibraryVisible, setSoundLibraryVisible] = useState(false);
   const [selectedButtonIndex, setSelectedButtonIndex] = useState(null);
   const [buttonSounds, setButtonSounds] = useState([null, null, null, null]);
-  
+
   // Usar el contexto
   const { selectedSounds } = useSoundContext();
 
-  React.useEffect(() => {
+  useEffect(() => {
     console.log('MixerScreen - Sonidos disponibles en contexto:', selectedSounds.length);
   }, [selectedSounds]);
 
   const handleSoundChange = (buttonIndex) => {
     console.log('Abriendo biblioteca para botón:', buttonIndex);
     console.log('Sonidos disponibles para seleccionar:', selectedSounds.length);
-    
+
     if (selectedSounds.length === 0) {
       Alert.alert(
-        'Sin sonidos', 
+        'Sin sonidos',
         'Primero ve al tab "Home" y selecciona algunos sonidos para poder usarlos aquí.',
         [{ text: 'OK' }]
       );
       return;
     }
-    
+
     setSelectedButtonIndex(buttonIndex);
     setSoundLibraryVisible(true);
   };
@@ -65,6 +66,29 @@ export default function MixerScreen() {
     );
   };
 
+  //TODO NUEVO + EL RENDER DE RECMIC
+  // Función para encontrar el primer índice libre (null o undefined) en buttonSounds
+  const getFirstAvailableIndex = () => {
+    for (let i = 0; i < buttonSounds.length; i++) {
+      if (!buttonSounds[i]) {
+        return i;
+      }
+    }
+    return -1; // Si no hay espacios libres
+  };
+
+/*   const handleNewRecordedSound = (sound) => {
+    addSound(sound); // primero actualizar contexto
+    const index = getFirstAvailableIndex();
+    if (index !== -1) {
+      const newButtonSounds = [...buttonSounds];
+      newButtonSounds[index] = sound;
+      setButtonSounds(newButtonSounds);
+    } else {
+      Alert.alert('Mixer lleno', 'No hay botones libres para asignar el sonido grabado');
+    }
+  }; */
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContent}>
@@ -74,6 +98,17 @@ export default function MixerScreen() {
           <Text style={styles.soundCount}>
             {selectedSounds.length} sonidos disponibles
           </Text>
+        </View>
+
+        <View>
+          <MicRecButton handleNewRecordedSound={(sound) => {
+            setButtonSounds((prev) => {
+              const updated = [...prev];
+              const index = getFirstAvailableIndex();
+              updated[index] = sound;
+              return updated;
+            });
+          }} />
         </View>
 
         <View style={styles.mixerGrid}>
@@ -152,7 +187,7 @@ export default function MixerScreen() {
   );
 }
 
-const styles = StyleSheet.create({          
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f8f9fa',

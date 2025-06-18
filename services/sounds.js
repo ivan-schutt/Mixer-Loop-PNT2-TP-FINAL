@@ -33,16 +33,7 @@ const sounds = () => [
     duration: '0:08',
     bpm: '120',
   },
-  {
-    id: '5',
-    name: 'Upload',
-    file: ('https://bzwlhdyyornbzinhsfbt.supabase.co/storage/v1/object/public/mixerloop//1750006885206_1750006416675_Download+(1)_out.mp3'),
-    category: 'Pad',
-    duration: '0:08',
-    bpm: '120',
-  },
 ];
-
 
 /* const getSounds = () => {
   // Simular una llamada a una API
@@ -134,6 +125,16 @@ const saveSound = (sound) => {
   })
 }
 
+let micRecordings = [];
+
+export const saveMicRecordingUri = (uri) => {
+  micRecordings.push({
+    uri,
+    timestamp: new Date().toISOString()
+  });
+};
+
+export const getMicRecordings = () => micRecordings;
 
 export {
   getSoundById,

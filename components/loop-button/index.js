@@ -11,7 +11,7 @@ const LoopButton = ({ soundData, onSoundChange }) => {
   const loadSound = async (audioFile) => {
     try {
       setIsLoading(true);
-      
+
       // Si hay un sonido anterior, descargarlo
       if (sound) {
         await sound.unloadAsync();
@@ -29,14 +29,14 @@ const LoopButton = ({ soundData, onSoundChange }) => {
         }
       );
       setSound(audioSound);
-      
+
       // Configurar el callback para cuando termine la reproducción
       audioSound.setOnPlaybackStatusUpdate((status) => {
         if (status.isLoaded) {
           setIsPlaying(status.isPlaying || false);
         }
       });
-      
+
     } catch (error) {
       console.error('Error cargando el audio:', error);
       Alert.alert('Error', 'No se pudo cargar el archivo de audio');
@@ -69,10 +69,17 @@ const LoopButton = ({ soundData, onSoundChange }) => {
     }
   };
 
-  // Cargar el audio cuando cambie soundData
+  // NUEVO NUEVO NUEVO
   useEffect(() => {
-    if (soundData && soundData.file) {
-      loadSound(soundData.file);
+    console.log('soundData recibido:', soundData);
+    if (soundData && (soundData.uri || soundData.file)) {
+      const audioSource = soundData.file || soundData.uri;
+      loadSound(audioSource);
+    } else {
+      if (sound) {
+        sound.unloadAsync();
+        setSound(null);
+      }
     }
   }, [soundData]);
 
