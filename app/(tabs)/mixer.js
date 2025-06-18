@@ -1,3 +1,4 @@
+import Counter from "@/components/counter";
 import LoopButton from "@/components/loop button";
 import { useSoundContext } from "@/contexts/SoundContext";
 import React, { useState } from "react";
@@ -75,6 +76,7 @@ export default function MixerScreen() {
             {selectedSounds.length} sonidos disponibles
           </Text>
         </View>
+        <Counter />
 
         <View style={styles.mixerGrid}>
           <View style={styles.row}>
