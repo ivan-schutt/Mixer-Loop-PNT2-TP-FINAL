@@ -36,7 +36,7 @@ export const AudioSyncProvider = ({ children }) => {
   //que se visuallice, tendriamos que cambiar a useState, por ahora dejo useRef.
   const currentBar = useRef(1);
 
-  //en principio en base al tiempo que tengo y aprovechando la logica actual de loop button, voy a utilizar un useRef a modo de contador
+  //en principio en base al tiempo que tengo y aprovechando la logica actual de loopButton, voy a utilizar un useRef a modo de contador
   //que cuando se reproduce un track, simplemente incrementa el contador. Y vice versa cuando se retire un track.
   //Me parece que esto lo podermos implementar mejor, en caso de que nos sirva podriamos tanto ir guardando ids
   // de los botones activos, o desarollar algo utilizando useEffect. Evaluemos esto luego de que implement los nuevos

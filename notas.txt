@@ -43,7 +43,7 @@ Nuevas Implementaciones:
 
 -Implementar SplashScreen.
 
--Implementar en el componente Sound-Item un botón de edición. 
+-Implementar en el componente soundItem un botón de edición. 
 
 ----------------------------------------
 

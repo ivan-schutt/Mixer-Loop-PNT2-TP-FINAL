@@ -1,5 +1,5 @@
 import Counter from "@/components/counter";
-import LoopButton from "@/components/loop button";
+import LoopButton from "@/components/loopButton";
 import { useSoundContext } from "@/contexts/SoundContext";
 import { useEffect, useState } from "react";
 import { Alert, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
