@@ -1,7 +1,7 @@
 import Counter from "@/components/counter";
 import LoopButton from "@/components/loop button";
 import { useSoundContext } from "@/contexts/SoundContext";
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import SoundLibraryScreen from "../SoundLibraryScreen";
 
@@ -13,7 +13,7 @@ export default function MixerScreen() {
   // Usar el contexto
   const { selectedSounds } = useSoundContext();
 
-  React.useEffect(() => {
+  useEffect(() => {
     console.log('MixerScreen - Sonidos disponibles en contexto:', selectedSounds.length);
   }, [selectedSounds]);
 
@@ -86,7 +86,6 @@ export default function MixerScreen() {
               <LoopButton
                 soundData={buttonSounds[1]}
                 onSoundChange={() => handleSoundChange(1)}
-                onClear={() => clearButton(0)}
               />
               <TouchableOpacity
                 style={[styles.clearButton, !buttonSounds[1] && styles.disabledClearButton]}
@@ -103,7 +102,6 @@ export default function MixerScreen() {
               <LoopButton
                 soundData={buttonSounds[2]}
                 onSoundChange={() => handleSoundChange(2)}
-                onClear={() => clearButton(0)}
               />
               <TouchableOpacity
                 style={[styles.clearButton, !buttonSounds[2] && styles.disabledClearButton]}
@@ -118,7 +116,6 @@ export default function MixerScreen() {
               <LoopButton
                 soundData={buttonSounds[3]}
                 onSoundChange={() => handleSoundChange(3)}
-                onClear={() => clearButton(0)}
               />
               <TouchableOpacity
                 style={[styles.clearButton, !buttonSounds[3] && styles.disabledClearButton]}
