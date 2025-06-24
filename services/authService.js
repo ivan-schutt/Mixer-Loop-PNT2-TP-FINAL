@@ -1,8 +1,15 @@
+
 const AUTH_KEY = '@auth_data';
 
-const login = (email, password) => {
+const login = async (email, password) => {
+/*
+  try{
+    const response = await axios.post('ruta definida', {email, password});
+    return response.data
+*/
   return new Promise((resolve, reject) => {
-    // TODO: Llamar a la API de login cuando la tengan implementada.
+
+
     setTimeout(() => {
       const shouldLogin = email.toString().toLowerCase() === 'admin' && password.toString() === '123456';
       if (shouldLogin) {
@@ -22,7 +29,13 @@ const login = (email, password) => {
     }, 1000)
   })
 }
-
+/*
+catch(error){
+  const msg = error.response?.data?.message || 'Error al iniciar sesión';
+  throw new Error(msg);
+}
+}
+*/
 export default {
   login,
   AUTH_KEY
