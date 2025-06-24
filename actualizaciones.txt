@@ -3,3 +3,7 @@
 -agregue el contexto de audio sync, para poder manejar el contador de beats y el contador de barras. Modifique el loop button para que use el contexto.
 agregue componente counter para ver el contador de beats y barras. La logica ya esta implementada y funcional en web y ios.Agrego modificaciones necesarias
 al log de notas.
+
+24/06/2025
+
+-Arregle el bug del F5 en la auth, cargando un estado de isLoading para que permita renderizar todas las pantallas.

@@ -2,9 +2,9 @@ import { AudioSyncProvider } from "@/contexts/AudioSyncContext";
 import { SoundProvider } from "@/contexts/SoundContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import {
-    DarkTheme,
-    DefaultTheme,
-    ThemeProvider,
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { SplashScreen, Stack, useRouter, useSegments } from "expo-router";
@@ -16,14 +16,16 @@ import { AuthProvider, useAuth } from "../contexts/AuthContext";
 SplashScreen.preventAutoHideAsync();
 
 function ProtectedLayout() {
-  const { auth } = useAuth();
+  const { auth, isLoading } = useAuth();
   const segments = useSegments();
   const router = useRouter();
 
   useEffect(() => {
-    if (segments.length === 0) {
+   if (isLoading) {
       return;
     }
+
+    SplashScreen.hideAsync();
 
     const inAuthGroup = segments[0] === "(auth)";
 
@@ -32,8 +34,11 @@ function ProtectedLayout() {
     } else if (auth && inAuthGroup) {
       router.replace("/(tabs)");
     }
-  }, [auth, segments]); 
+  }, [isLoading, auth, segments]); 
 
+    if (isLoading) {
+    return null;
+  }
 
   return <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="(auth)"  />
@@ -48,11 +53,6 @@ export default function RootLayout() {
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
   
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
   
   if (!loaded) {
     return null;

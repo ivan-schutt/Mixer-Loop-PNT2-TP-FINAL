@@ -6,6 +6,8 @@ const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [auth, setAuth] = useState(null);
+  const [isLoading, setLoading] = useState(true);
+
   useEffect(() => {
 
     AsyncStorage.getData(authService.AUTH_KEY).then((data) => {
@@ -13,7 +15,11 @@ export function AuthProvider({ children }) {
       if (data) {
         setAuth(data);
       }
-    });
+    }).catch((err) => {
+        console.error("Error al leer AsyncStorage", err);
+      }).finally(() => {
+          setLoading(false);
+        });;
   }, []);
 
   useEffect(() => {
@@ -26,7 +32,7 @@ export function AuthProvider({ children }) {
     }
   }, [auth]);
 
-  return <AuthContext.Provider value={{ auth, setAuth }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ auth, setAuth, isLoading  }}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {
