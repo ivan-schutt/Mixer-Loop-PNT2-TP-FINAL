@@ -1,9 +1,10 @@
+import { AudioSyncProvider } from "@/contexts/AudioSyncContext";
 import { SoundProvider } from "@/contexts/SoundContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
+    DarkTheme,
+    DefaultTheme,
+    ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { SplashScreen, Stack, useRouter, useSegments } from "expo-router";
@@ -60,10 +61,12 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <SoundProvider>
-        <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-          <ProtectedLayout />
-          <StatusBar style="auto" />
-        </ThemeProvider>
+        <AudioSyncProvider>
+          <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+            <ProtectedLayout />
+            <StatusBar style="auto" />
+          </ThemeProvider>
+        </AudioSyncProvider>
       </SoundProvider>
     </AuthProvider>
   );

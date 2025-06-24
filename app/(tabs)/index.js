@@ -1,5 +1,5 @@
 import ButtonUpload from '@/components/buttonUpload/ButtonUpload';
-import SoundItem from '@/components/sound-item';
+import SoundItem from '@/components/soundItem';
 import { useSoundContext } from '@/contexts/SoundContext';
 import { getSounds } from '@/services/sounds';
 import { useEffect, useState } from 'react';

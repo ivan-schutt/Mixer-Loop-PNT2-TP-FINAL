@@ -5,6 +5,7 @@ Expo - React Native - React Native Elements - React Navigation - expo-av
 ------
 
 Bugs:
+-En Android hay un pequeño GAP en los play y sincronizaciones de los sonidos. Probar cambiar al play de React-Native.
 
 -Pantalla de sonido deberia reproducir un sonido a la vez. Si uno se esta repodriduciendo, y se toca play en otro,
 deberia pausar el primer sonido, asi se escucha solo un sonido a la vez.
@@ -42,7 +43,7 @@ Nuevas Implementaciones:
 
 -Implementar SplashScreen.
 
--Implementar en el componente Sound-Item un botón de edición. 
+-Implementar en el componente soundItem un botón de edición. 
 
 ----------------------------------------
 
