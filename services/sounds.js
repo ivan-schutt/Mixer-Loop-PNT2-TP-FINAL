@@ -4,7 +4,7 @@ const sounds = () => [
   {
     id: '1',
     name: 'Drum Loop Live',
-    file: require('../assets/audio/drums/DSC_NGL_120_drum_loop_live.mp3'),
+    file: ('https://rsavyhrqfdpjviikufad.supabase.co/storage/v1/object/public/mixerloop/Drums%201.mp3'),
     category: 'Drums',
     duration: '0:08',
     bpm: '120',
@@ -12,7 +12,7 @@ const sounds = () => [
   {
     id: '2',
     name: 'Drum Full Chorus',
-    file: require('../assets/audio/drums/DS_PCH_120_drum_full_better_chorus.mp3'),
+    file: ('https://rsavyhrqfdpjviikufad.supabase.co/storage/v1/object/public/mixerloop/Drums%202.mp3'),
     category: 'Drums',
     duration: '0:08',
     bpm: '120',
@@ -20,7 +20,7 @@ const sounds = () => [
   {
     id: '3',
     name: 'Bass Loop',
-    file: require('../assets/audio/drums/nd2_bass120_class_Cm.mp3'),
+    file: ('https://rsavyhrqfdpjviikufad.supabase.co/storage/v1/object/public/mixerloop/Bass%201.mp3'),
     category: 'Bass',
     duration: '0:08',
     bpm: '120',
@@ -28,7 +28,7 @@ const sounds = () => [
   {
     id: '4',
     name: 'Pad Flange',
-    file: require('../assets/audio/drums/TL_MS_Pad_Loop_Pad_Flange_Low_Pulse_Cm_120.mp3'),
+    file: ('https://rsavyhrqfdpjviikufad.supabase.co/storage/v1/object/public/mixerloop/Pad%202.mp3'),
     category: 'Pad',
     duration: '0:08',
     bpm: '120',
@@ -36,7 +36,7 @@ const sounds = () => [
   {
     id: '5',
     name: 'Upload',
-    file: ('https://bzwlhdyyornbzinhsfbt.supabase.co/storage/v1/object/public/mixerloop//1750006885206_1750006416675_Download+(1)_out.mp3'),
+    file: ('https://rsavyhrqfdpjviikufad.supabase.co/storage/v1/object/public/mixerloop/Pad%201.mp3'),
     category: 'Pad',
     duration: '0:08',
     bpm: '120',
