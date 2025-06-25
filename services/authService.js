@@ -1,13 +1,14 @@
+import axios from 'axios';
 
 const AUTH_KEY = '@auth_data';
 
 const login = async (email, password) => {
-/*
+
   try{
-    const response = await axios.post('ruta definida', {email, password});
+    const response = await axios.post('http://localhost:8080/api/users/conexion', {email, password});
     return response.data
-*/
-  return new Promise((resolve, reject) => {
+
+  /* return new Promise((resolve, reject) => {
 
 
     setTimeout(() => {
@@ -28,14 +29,14 @@ const login = async (email, password) => {
       }
     }, 1000)
   })
-}
-/*
-catch(error){
+} */
+
+} catch(error){
   const msg = error.response?.data?.message || 'Error al iniciar sesión';
   throw new Error(msg);
 }
 }
-*/
+
 export default {
   login,
   AUTH_KEY
