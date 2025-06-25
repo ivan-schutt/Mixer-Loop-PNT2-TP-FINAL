@@ -1,26 +1,25 @@
 // components/ButtonUpload.js
-import * as DocumentPicker from 'expo-document-picker';
-import { useState } from 'react';
+import * as DocumentPicker from "expo-document-picker";
+import { useState } from "react";
 import {
-    Button,
-    Modal,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
-} from 'react-native';
-import { supabase } from '../../services/supabase';
-
+  Button,
+  Modal,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { supabase } from "../../services/supabase";
 
 export default function ButtonUpload() {
   const [modalVisible, setModalVisible] = useState(false);
-  const [title, setTitle] = useState('');
+  const [title, setTitle] = useState("");
   const [file, setFile] = useState(null);
 
   const handlePickFile = async () => {
     const result = await DocumentPicker.getDocumentAsync({
-      type: 'audio/mpeg', 
+      type: "audio/mpeg",
       copyToCacheDirectory: true,
     });
 
@@ -29,36 +28,44 @@ export default function ButtonUpload() {
     }
   };
 
-const handleUpload = async () => {
-  if (!title || !file) {
-    alert('Por favor completá todos los campos');
-    return;
-  }
+  const handleUpload = async () => {
+    if (!title || !file) {
+      alert("Por favor completá todos los campos");
+      return;
+    }
 
-  try {
-    const fileName = `${Date.now()}_${file.name}`;
+    try {
+      const fileName = `${Date.now()}_${file.name}`;
 
-    const response = await fetch(file.uri);
-    const blob = await response.blob();
+      const response = await fetch(file.uri);
+      const blob = await response.blob();
 
-    const { data, error } = await supabase.storage
-      .from('mixerloop') 
-      .upload(fileName, blob, {
-        contentType: 'audio/mpeg',
-        upsert: false,
-      });
+      const { data, error } = await supabase.storage
+        .from("mixerloop")
+        .upload(fileName, blob, {
+          contentType: "audio/mpeg",
+          upsert: false,
+        });
 
-    if (error) throw error;
+      if (error) throw error;
 
-    alert('¡Audio subido con éxito!');
-    setModalVisible(false);
-    setTitle('');
-    setFile(null);
-  } catch (error) {
-    console.error('Error al subir el archivo:', error);
-    alert('Hubo un error al subir el archivo.');
-  }
-};
+      // Obtener la URL pública
+      const { data: publicUrlData } = supabase.storage
+        .from("mixerloop")
+        .getPublicUrl(fileName);
+
+      const publicUrl = publicUrlData.publicUrl;
+      console.log("Archivo subido. URL pública:", publicUrl);
+
+      alert("¡Audio subido con éxito!");
+      setModalVisible(false);
+      setTitle("");
+      setFile(null);
+    } catch (error) {
+      console.error("Error al subir el archivo:", error);
+      alert("Hubo un error al subir el archivo.");
+    }
+  };
 
   return (
     <View style={styles.card}>
@@ -75,9 +82,12 @@ const handleUpload = async () => {
               onChangeText={setTitle}
             />
 
-            <TouchableOpacity onPress={handlePickFile} style={styles.fileButton}>
+            <TouchableOpacity
+              onPress={handlePickFile}
+              style={styles.fileButton}
+            >
               <Text style={styles.fileButtonText}>
-                {file ? `Archivo: ${file.name}` : 'Seleccionar archivo .mp3'}
+                {file ? `Archivo: ${file.name}` : "Seleccionar archivo .mp3"}
               </Text>
             </TouchableOpacity>
 
@@ -94,11 +104,11 @@ const handleUpload = async () => {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 12,
     padding: 20,
     marginBottom: 16,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -106,39 +116,39 @@ const styles = StyleSheet.create({
   },
   modalBackground: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0,0,0,0.4)",
+    justifyContent: "center",
+    alignItems: "center",
   },
   modalContainer: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 12,
     padding: 24,
-    width: '85%',
+    width: "85%",
   },
   label: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 8,
   },
   input: {
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 8,
     padding: 10,
     marginBottom: 16,
   },
   fileButton: {
-    backgroundColor: '#1150d2',
+    backgroundColor: "#1150d2",
     padding: 12,
     borderRadius: 8,
     marginBottom: 16,
   },
   fileButtonText: {
-    color: '#fff',
-    textAlign: 'center',
+    color: "#fff",
+    textAlign: "center",
   },
   buttonRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
 });
