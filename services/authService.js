@@ -1,35 +1,40 @@
 const AUTH_KEY = "@auth_data";
 import axios from "axios";
 
-const login = async (email, password) => {
+const login = async ({email, password }) => {
+  console.log(email, password)
   try {
-    return new Promise(async (resolve, reject) => {
-      const shouldLogin = await axios.post(
-        "http://localhost:8080/api/users/login",
-        {
-          email,
-          password,
-        }
-      );
-
-      setTimeout(() => {
-        console.log("shouldLogin.status", shouldLogin);
-        if (shouldLogin.status === 200) {
-          resolve({
-            access_token: "1234567890",
-            expires_in: 3600,
-          });
-        } else {
-        }
-      }, 1000);
+    const response = await axios.post('http://localhost:8080/api/users/login', {
+      email,
+      password,
     });
+
+    return response.data;
   } catch (error) {
-    const msg = error.response?.data?.message || "Error al iniciar sesión";
+    const msg = error.response?.data?.message || 'Error al ingresar';
     throw new Error(msg);
   }
 };
 
+const register = async ({ nombre, email, password }) => {
+  try {
+    const response = await axios.post('http://localhost:8080/api/users/register', {
+      nombre,
+      email,
+      password,
+    });
+
+    return response.data;
+  } catch (error) {
+    const msg = error.response?.data?.message || 'Error al registrar';
+    throw new Error(msg);
+  }
+};
+
+
+
 export default {
   login,
+  register,
   AUTH_KEY,
 };

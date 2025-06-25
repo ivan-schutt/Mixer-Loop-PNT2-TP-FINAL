@@ -1,9 +1,35 @@
 import { Button } from '@rneui/themed';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
+import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TextInput } from 'react-native';
+import authService from '../../services/authService';
+import { useAuth } from '../../contexts/AuthContext';
+
+
 
 export default function RegisterScreen({ navigation }) {
+  const [nombre, setNombre] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmarPassword, setConfirmarPassword] = useState('');
+  const { setAuth } = useAuth(); 
+
+
+    const handleRegister = async () => {
+      if (password !== confirmarPassword) {
+      alert('Las contraseñas no coinciden');
+      return;
+      }
+      try{
+          const response = await authService.register({ nombre, email, password });
+          console.log('Usuario registrado:', response);
+          setAuth(response)
+      } catch (error) {
+    alert(error.message || 'Error al registrar usuario');
+  }};
+
+
   return (
     <LinearGradient
       colors={['#00b4db', '#121212', '#000000']}
@@ -19,6 +45,8 @@ export default function RegisterScreen({ navigation }) {
           placeholderTextColor="#ccc" 
           style={styles.input} 
           autoCapitalize="words"
+          value={nombre}
+          onChangeText={setNombre}
         />
         <TextInput 
           placeholder="Email" 
@@ -26,18 +54,24 @@ export default function RegisterScreen({ navigation }) {
           style={styles.input} 
           keyboardType="email-address"
           autoCapitalize="none"
+          value={email}
+          onChangeText={setEmail}
         />
         <TextInput 
           placeholder="Contraseña" 
           placeholderTextColor="#ccc" 
           secureTextEntry 
-          style={styles.input} 
+          style={styles.input}
+          value={password}
+          onChangeText={setPassword} 
         />
         <TextInput 
           placeholder="Confirmar contraseña" 
           placeholderTextColor="#ccc" 
           secureTextEntry 
-          style={styles.input} 
+          style={styles.input}
+          value={confirmarPassword}
+          onChangeText={setConfirmarPassword}
         />
 
         <Button
@@ -45,7 +79,7 @@ export default function RegisterScreen({ navigation }) {
           buttonStyle={{ backgroundColor: '#00b4db' }}
           titleStyle={{ fontWeight: 'bold' }}
           containerStyle={styles.buttonContainer}
-          onPress={() => console.log('Registrar usuario')}
+          onPress={handleRegister}
         />
 
         <Button

@@ -14,16 +14,16 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     console.log(`Intentando iniciar sesión con: ${email}`);
-
-    authService.login(email, password).then((response) => {
-      console.log('response', response);
-      setAuth(response);
-    }).catch((error) => {
-      console.log('error', error);
-      alert(error);
-    })
+    
+    try{
+          const response = await authService.login({email, password });
+          console.log('Usuario logueado:', response);
+          setAuth(response)
+      } catch (error) {
+    alert(error.message || 'Error al intentar iniciar sesión');
+  };
     
   }
 
@@ -41,7 +41,7 @@ export default function LoginScreen() {
         placeholderTextColor="#ccc"
         style={styles.input}
         value={email}
-        onChangeText={(text) => setEmail(text)}
+        onChangeText={setEmail}
         keyboardType="email-address"
         autoCapitalize="none"
       />
@@ -51,7 +51,7 @@ export default function LoginScreen() {
         secureTextEntry
         style={styles.input}
         value={password}
-        onChangeText={(text) => setPassword(text)}
+        onChangeText={setPassword} 
       />
 
       <Button
