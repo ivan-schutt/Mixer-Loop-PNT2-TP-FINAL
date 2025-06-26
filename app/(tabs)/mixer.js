@@ -1,8 +1,9 @@
 import Counter from "@/components/counter";
 import LoopButton from "@/components/loopButton";
+import MicRecButton from "@/components/MicRecButton";
 import { useSoundContext } from "@/contexts/SoundContext";
 import { useEffect, useState } from "react";
-import { Alert, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import SoundLibraryScreen from "../SoundLibraryScreen";
 
 export default function MixerScreen() {
@@ -10,7 +11,6 @@ export default function MixerScreen() {
   const [selectedButtonIndex, setSelectedButtonIndex] = useState(null);
   const [buttonSounds, setButtonSounds] = useState([null, null, null, null]);
 
-  // Usar el contexto
   const { selectedSounds } = useSoundContext();
 
   useEffect(() => {
@@ -22,11 +22,7 @@ export default function MixerScreen() {
     console.log('Sonidos disponibles para seleccionar:', selectedSounds.length);
 
     if (selectedSounds.length === 0) {
-      Alert.alert(
-        'Sin sonidos',
-        'Primero ve al tab "Home" y selecciona algunos sonidos para poder usarlos aquí.',
-        [{ text: 'OK' }]
-      );
+      window.alert('Primero ve al tab "Home" y selecciona algunos sonidos para poder usarlos aquí.');
       return;
     }
 
@@ -41,7 +37,6 @@ export default function MixerScreen() {
       newButtonSounds[selectedButtonIndex] = sound;
       setButtonSounds(newButtonSounds);
       console.log('Nuevos sonidos de botones:', newButtonSounds);
-      // Alert.alert('Sonido asignado', `${sound.name} asignado al botón ${selectedButtonIndex + 1}`);
     }
     setSoundLibraryVisible(false);
     setSelectedButtonIndex(null);
@@ -52,6 +47,16 @@ export default function MixerScreen() {
     newButtonSounds[buttonIndex] = null;
     setButtonSounds(newButtonSounds);
     console.log('Botón limpiado:', buttonIndex);
+  };
+
+  // Encuentra el primer índice disponible en buttonSounds (micRecButton)
+  const getFirstAvailableIndex = () => {
+    for (let i = 0; i < buttonSounds.length; i++) {
+      if (!buttonSounds[i]) {
+        return i;
+      }
+    }
+    return -1; // Si no hay espacios libres
   };
 
   return (
@@ -65,7 +70,16 @@ export default function MixerScreen() {
           </Text>
         </View>
         <Counter />
-
+        <View>
+          <MicRecButton handleNewRecordedSound={(sound) => {
+            setButtonSounds((prev) => {
+              const updated = [...prev];
+              const index = getFirstAvailableIndex();
+              updated[index] = sound;
+              return updated;
+            });
+          }} />
+        </View>
         <View style={styles.mixerGrid}>
           <View style={styles.row}>
             <View style={styles.buttonContainer}>

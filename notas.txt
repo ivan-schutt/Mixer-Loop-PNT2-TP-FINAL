@@ -5,7 +5,8 @@ Expo - React Native - React Native Elements - React Navigation - expo-av
 ------
 
 Bugs:
--En Android hay un pequeño GAP en los play y sincronizaciones de los sonidos. Probar cambiar al play de React-Native.
+
+-Credenciales erróneas en el login: "pasa acá", modificar. 
 
 -Pantalla de sonido deberia reproducir un sonido a la vez. Si uno se esta repodriduciendo, y se toca play en otro,
 deberia pausar el primer sonido, asi se escucha solo un sonido a la vez.
@@ -15,8 +16,6 @@ deberia pausar el primer sonido, asi se escucha solo un sonido a la vez.
 -Al hacer todos los archivos de 3 minutos, note un pequeño delay al cargar los sonidos, tal ves sea conveniente
 agregar un loading con unos segundos de carga, para que no se note al llegar al menu.
 
--el boton de limpiar no funciona en Android y Web.
-
 -WARN  "shadow*" style props are deprecated. Use "boxShadow". 
 
 -WARN  [expo-av]: Expo AV has been deprecated and will be removed in SDK 54. Please use the `expo-audio` and `expo-video` packages to replace the required functionality.
@@ -25,33 +24,27 @@ agregar un loading con unos segundos de carga, para que no se note al llegar al 
 
 Nuevas Implementaciones:
 
--Autenticación - PathName.
-
--Integrar botón de limpiar para web y android. 
-
--implementar el boton de agregar sonidos.
-
--Combinar hook y context.
-
--Implementar metrónomo/sync como un hook/context.
+-Conectar buttonUpload + micRecButton con Supabase + back.
 
 -Implementar botón de REC para la sesión general.
 
--Implementar botón de REC para mic. 
+-Mejorar componente de metrónomo visual. 
 
--Implementar componente de metrónomo visual. 
-
--Implementar SplashScreen.
+-Implementar SplashScreen. 
 
 -Implementar en el componente soundItem un botón de edición. 
 
-----------------------------------------
+------
+
+Para normalizar:
+
+-Carpetas de componentes con mayuscula + imports
+-ButtonUpload cambiar a index.js de nombre + imports
+-Combinar hook y context
+
+------
 
 Consultas Al Profesor:
 
--Deberia ir soundContext dentro de hooks?
 
--10/06-
-Se borraron las dependencias de react navigation.
-Generó error. se tuvo que utilizar --force para borrarlas
 

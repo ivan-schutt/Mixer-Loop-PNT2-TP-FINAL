@@ -34,7 +34,7 @@ const LoopButton = ({ soundData, onSoundChange }) => {
     }
   }, [currentCount, shouldListen]);
 
-    // Cargar el audio cuando cambie soundData. Si no hay soundData, limpiar el sonido actual.
+  // Cargar el audio cuando cambie soundData. Si no hay soundData, limpiar el sonido actual.
   // Si el sonido es borrado de este componente, se detiene la reproducción y deja el espacio para seleccionar otro sonido.
   useEffect(() => {
     const cleanupSound = async () => {
@@ -49,8 +49,20 @@ const LoopButton = ({ soundData, onSoundChange }) => {
       }
     };
 
+    const handleSoundLoad = async () => {
+      try {
+        await loadSound(soundData.file);
+
+        if (soundData.fromMic) {
+          startPlayback(); // Play automático de MicRecButton
+        }
+      } catch (error) {
+        console.error('Error cargando sonido:', error);
+      }
+    };
+
     if (soundData && soundData.file) {
-      loadSound(soundData.file);
+      handleSoundLoad();
     } else {
       cleanupSound();
     }

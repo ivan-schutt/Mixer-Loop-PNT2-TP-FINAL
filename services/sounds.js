@@ -28,7 +28,7 @@ const sounds = () => [
   {
     id: '4',
     name: 'Pad Flange',
-    file: ('https://rsavyhrqfdpjviikufad.supabase.co/storage/v1/object/public/mixerloop/Pad%202.mp3'),
+    file: ('https://rsavyhrqfdpjviikufad.supabase.co/storage/v1/object/public/mixerloop//Pad%201.mp3'),
     category: 'Pad',
     duration: '0:08',
     bpm: '120',
