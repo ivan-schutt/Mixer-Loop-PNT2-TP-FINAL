@@ -22,7 +22,7 @@ export default function MixerScreen() {
     console.log('Sonidos disponibles para seleccionar:', selectedSounds.length);
 
     if (selectedSounds.length === 0) {
-      window.alert('Primero ve al tab "Home" y selecciona algunos sonidos para poder usarlos aquí.');
+      alert('Primero ve al tab "Home" y selecciona algunos sonidos para poder usarlos aquí.');
       return;
     }
 

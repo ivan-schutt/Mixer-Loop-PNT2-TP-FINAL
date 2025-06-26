@@ -35,7 +35,6 @@ const clearData = async () => {
   }
 }
 
-
 export default {
   storeData,
   getData,

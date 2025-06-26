@@ -1,4 +1,4 @@
-
+const URL_API = 'http://localhost:8080/api/sounds'
 
 const sounds = () => [
   {
@@ -116,10 +116,11 @@ const updateSound = (sound) => {
 
 const saveSound = (sound) => {
   return new Promise((resolve, reject) => {
-    fetch(`${URL_API}/create`, {
+    fetch(`${URL_API}`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        //'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify(sound)
     })

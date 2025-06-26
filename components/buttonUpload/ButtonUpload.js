@@ -1,4 +1,5 @@
 // components/ButtonUpload.js
+import { Picker } from "@react-native-picker/picker";
 import * as DocumentPicker from "expo-document-picker";
 import { useState } from "react";
 import {
@@ -10,12 +11,16 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useAuth } from "../../contexts/AuthContext";
+import { saveSound } from "../../services/sounds";
 import { supabase } from "../../services/supabase";
 
 export default function ButtonUpload() {
   const [modalVisible, setModalVisible] = useState(false);
   const [title, setTitle] = useState("");
   const [file, setFile] = useState(null);
+  const [type, setType] = useState("");
+  const { auth } = useAuth();
 
   const handlePickFile = async () => {
     const result = await DocumentPicker.getDocumentAsync({
@@ -23,9 +28,7 @@ export default function ButtonUpload() {
       copyToCacheDirectory: true,
     });
 
-    if (!result.canceled) {
-      setFile(result.assets[0]);
-    }
+    if (!result.canceled) setFile(result.assets[0]);
   };
 
   const handleUpload = async () => {
@@ -55,6 +58,10 @@ export default function ButtonUpload() {
         .getPublicUrl(fileName);
 
       const publicUrl = publicUrlData.publicUrl;
+
+      console.log(auth)
+
+      await saveSound({ title, type, url: publicUrl, user: auth.user });
       console.log("Archivo subido. URL pública:", publicUrl);
 
       alert("¡Audio subido con éxito!");
@@ -71,9 +78,11 @@ export default function ButtonUpload() {
     <View style={styles.card}>
       <Button title="Subir Audio" onPress={() => setModalVisible(true)} />
 
+      {/* ---------- Modal ---------- */}
       <Modal visible={modalVisible} animationType="slide" transparent={true}>
         <View style={styles.modalBackground}>
           <View style={styles.modalContainer}>
+            {/* Título */}
             <Text style={styles.label}>Título del Audio</Text>
             <TextInput
               style={styles.input}
@@ -82,15 +91,28 @@ export default function ButtonUpload() {
               onChangeText={setTitle}
             />
 
-            <TouchableOpacity
-              onPress={handlePickFile}
-              style={styles.fileButton}
+            {/* Tipo */}
+            <Text style={[styles.label, { marginTop: 8 }]}>Tipo</Text>
+            <Picker
+              selectedValue={type}
+              onValueChange={setType}
+              style={styles.picker}
             >
+              <Picker.Item label="Seleccionar tipo" value="" enabled={false} />
+              <Picker.Item label="Bass" value="BASS" />
+              <Picker.Item label="Drums" value="DRUMS" />
+              <Picker.Item label="Pads" value="PADS" />
+              <Picker.Item label="Leads" value="LEADS" />
+            </Picker>
+
+            {/* Archivo */}
+            <TouchableOpacity onPress={handlePickFile} style={styles.fileButton}>
               <Text style={styles.fileButtonText}>
                 {file ? `Archivo: ${file.name}` : "Seleccionar archivo .mp3"}
               </Text>
             </TouchableOpacity>
 
+            {/* Botones */}
             <View style={styles.buttonRow}>
               <Button title="Cancelar" onPress={() => setModalVisible(false)} />
               <Button title="Subir" onPress={handleUpload} />
@@ -124,17 +146,20 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 12,
     padding: 24,
-    width: "85%",
+    width: "88%",
   },
-  label: {
-    fontWeight: "bold",
-    marginBottom: 8,
-  },
+  label: { fontWeight: "bold", marginBottom: 4 },
   input: {
     borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 8,
     padding: 10,
+    marginBottom: 12,
+  },
+  picker: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
     marginBottom: 16,
   },
   fileButton: {
@@ -143,12 +168,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 16,
   },
-  fileButtonText: {
-    color: "#fff",
-    textAlign: "center",
-  },
-  buttonRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
+  fileButtonText: { color: "#fff", textAlign: "center" },
+  buttonRow: { flexDirection: "row", justifyContent: "space-between" },
 });

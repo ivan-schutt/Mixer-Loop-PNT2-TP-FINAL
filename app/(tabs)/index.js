@@ -17,34 +17,29 @@ export default function HomeScreen() {
   console.log('=== HomeScreen RENDER ===');
 
   // Obtener contexto
-  const contextValue = useSoundContext();
-  const { selectedSounds, addSound, removeSound, isSoundSelected } = contextValue;
+  const { selectedSounds, addSound, removeSound, isSoundSelected } = useSoundContext();
 
   // Cargar sonidos disponibles
   const [availableSounds, setAvailableSounds] = useState([]);
 
-
   //se ejecuta cuando el componente se monta.
-
   useEffect(() => {
     const fetchSounds = async () => {
       try {
-        const sounds = await getSounds(); 
+        const sounds = await getSounds();
         setAvailableSounds(sounds);
       } catch (error) {
         console.error('Error al obtener sonidos:', error);
-      } 
+      }
     };
 
     fetchSounds();
   }, []);
 
-  console.log('HomeScreen - Contexto obtenido:', !!contextValue);
   console.log('HomeScreen - selectedSounds:', selectedSounds?.length || 0);
   console.log('HomeScreen - addSound function:', typeof addSound);
 
   //handleToggleSound funciona en relacion al contexto de sound context.
-
   const handleToggleSound = (sound) => {
     console.log('=== handleToggleSound ===');
     console.log('Sonido a toggle:', sound.name, 'ID:', sound.id);

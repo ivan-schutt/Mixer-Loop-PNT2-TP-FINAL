@@ -31,8 +31,6 @@ const register = async ({ nombre, email, password }) => {
   }
 };
 
-
-
 export default {
   login,
   register,
