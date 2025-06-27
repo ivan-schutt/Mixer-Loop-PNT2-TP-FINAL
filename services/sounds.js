@@ -3,8 +3,8 @@ const URL_API = 'http://localhost:8080/api/sounds'
 const sounds = () => [
   {
     id: '1',
-    name: 'Drum Loop Live',
-    file: ('https://rsavyhrqfdpjviikufad.supabase.co/storage/v1/object/public/mixerloop/Drums%201.mp3'),
+    name: 'Bass 1',
+    file: ('https://rsavyhrqfdpjviikufad.supabase.co/storage/v1/object/sign/mixerloop/Bass%201.mp3?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9lMTFhYmM3Ny0xOGUwLTRjNzItYjM1ZC1hOWZhNDYwMGY1ZWEiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJtaXhlcmxvb3AvQmFzcyAxLm1wMyIsImlhdCI6MTc1MTAzNzM4NywiZXhwIjoxNzgyNTczMzg3fQ.0HOClQVIis3vTSnITATZ8C7OV838mojIEuGr7YPXyR8'),
     category: 'Drums',
     duration: '0:08',
     bpm: '120',

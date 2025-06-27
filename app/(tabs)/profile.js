@@ -28,7 +28,7 @@ const { auth, setAuth } = useAuth();
 
         <View style={styles.footer}>
           <Text style={styles.footerText}>
-            Mixer App v1.0 - Creado con React Native y Expo
+            Mixer App v1.0 - Creado con mucho amor, React Native y Expo
           </Text>
         </View>
       </ScrollView>
