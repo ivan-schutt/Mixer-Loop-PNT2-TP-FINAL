@@ -8,6 +8,7 @@ import {
   View,
 } from 'react-native';
 
+
 const SoundItem = ({
   sound,
   isSelected,
@@ -17,6 +18,7 @@ const SoundItem = ({
   const [isLoading, setIsLoading] = useState(false);
   // Referencia al sonido, a diferencia de useState, no causa un re-renderizado del componente cuando se actualiza.
   const soundRef = useRef(null);
+  
 
   const handlePlayPreview = async () => {
     try {
@@ -29,11 +31,13 @@ const SoundItem = ({
           await soundRef.current.unloadAsync();
           //Sirve limpiar la referencia al sonido, para evitar posibles problemas de memoria.
           soundRef.current = null;
+        
         }
         setIsPlaying(false);
       } else {
         // Si no está reproduciéndose, iniciar
         setIsLoading(true);
+       
 
 
         // Crear el sonido.

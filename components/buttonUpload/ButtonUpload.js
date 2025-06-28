@@ -63,6 +63,7 @@ export default function ButtonUpload({ onUploadSuccess }) {
       console.log("Archivo subido. URL pública:", publicUrl);
 
       alert("¡Audio subido con éxito!");
+      //si onUploadSuccess es truthy, se llama a la funcion onUploadSuccess.
       if (onUploadSuccess) onUploadSuccess(); 
 
       setModalVisible(false);
@@ -102,7 +103,7 @@ export default function ButtonUpload({ onUploadSuccess }) {
               <Picker.Item label="Bass" value="BASS" />
               <Picker.Item label="Drums" value="DRUMS" />
               <Picker.Item label="Pads" value="PADS" />
-              <Picker.Item label="Leads" value="LEADS" />
+              <Picker.Item label="Shaker" value="SHAKERS" />
             </Picker>
 
             {/* Archivo */}

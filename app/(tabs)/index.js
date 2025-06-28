@@ -2,6 +2,7 @@ import ButtonUpload from '@/components/buttonUpload/ButtonUpload';
 import SoundItem from '@/components/soundItem';
 import { useSoundContext } from '@/contexts/SoundContext';
 import { getSounds } from '@/services/sounds';
+import { Picker } from "@react-native-picker/picker";
 import { useEffect, useState } from 'react';
 import {
   Alert,
@@ -26,6 +27,27 @@ export default function HomeScreen() {
   const { auth } = useAuth();
   // Para resfrecar cada vez que se sube un audio
   const [refresh, setRefresh] = useState(false);
+  // Para filtrar sonidos por tipo
+  const [selectedFilter, setSelectedFilter] = useState('TODOS');
+
+  // Generar tipos de sonidos disponibles dinámicamente
+  const soundTypes = (() => {
+    // Extraer tipos únicos de availableSounds
+    const uniqueTypes = [...new Set(
+      availableSounds
+        .map(sound => sound.category || sound.type)
+        .filter(type => type) // Filtrar valores null/undefined
+    )];
+
+    // Crear array con "Todos" primero, luego los tipos encontrados
+    return [
+      { label: 'Todos los sonidos', value: 'TODOS' },
+      ...uniqueTypes.map(type => ({
+        label: type.charAt(0).toUpperCase() + type.slice(1).toLowerCase(), // Capitalizar
+        value: type
+      }))
+    ];
+  })();
 
   //se ejecuta cuando el componente se monta.
   useEffect(() => {
@@ -33,6 +55,7 @@ export default function HomeScreen() {
       try {
         const sounds = await getSounds(auth.user._id);
         setAvailableSounds(sounds);
+        console.log("refresh", refresh);
       } catch (error) {
         console.error('Error al obtener sonidos:', error);
       }
@@ -41,8 +64,16 @@ export default function HomeScreen() {
     fetchSounds();
   }, [refresh]);
 
+  // Filtrar sonidos según el tipo seleccionado
+  const filteredSounds = availableSounds.filter(sound => {
+    if (selectedFilter === 'TODOS') return true; 
+    
+    return sound.category === selectedFilter || sound.type === selectedFilter;
+  });
+
   console.log('HomeScreen - selectedSounds:', selectedSounds?.length || 0);
   console.log('HomeScreen - addSound function:', typeof addSound);
+  console.log('HomeScreen - filteredSounds:', filteredSounds.length, 'of', availableSounds.length);
 
   //handleToggleSound funciona en relacion al contexto de sound context.
   const handleToggleSound = (sound) => {
@@ -66,6 +97,11 @@ export default function HomeScreen() {
       console.error('Error:', error);
       Alert.alert('Error', error.message);
     }
+  };
+
+  const handleFilterChange = (value) => {
+    setSelectedFilter(value);
+    console.log('Filtro cambiado a:', value);
   };
 
   return (
@@ -101,20 +137,50 @@ export default function HomeScreen() {
 
         <ButtonUpload onUploadSuccess={() => setRefresh(prev => !prev)} />
 
+        {/* Filtro de sonidos */}
+        <View style={styles.filterSection}>
+          <Text style={styles.filterLabel}>Filtrar por tipo:</Text>
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={selectedFilter}
+              onValueChange={handleFilterChange}
+              style={styles.picker}
+            >
+              {soundTypes.map(type => (
+                <Picker.Item key={type.value} label={type.label} value={type.value} />
+              ))}
+            </Picker>
+          </View>
+        </View>
+
         {/* Lista de todos los sonidos usando el componente SoundItem */}
         <View style={styles.availableSection}>
-          <Text style={styles.sectionTitle}>Todos los Sonidos Disponibles</Text>
-          {availableSounds.map(sound => (
-            <SoundItem
-              key={sound.id}
-              sound={sound}
-              isSelected={isSoundSelected(sound.id)}
-              //onToggleSelection es la función que se ejecuta cuando se selecciona o deselecciona un sonido.
-              //por eso aca se le pasa la funcion handleToggleSound, que es la que se encarga de agregar o quitar el sonido, a
-              //sound item. De esta forma, se evita que el componente SoundItem se vuelva a renderizar, y se evita que se vuelva a llamar a la funcion handleToggleSound.
-              onToggleSelection={handleToggleSound}
-            />
-          ))}
+          <Text style={styles.sectionTitle}>
+            {selectedFilter === 'TODOS' 
+              ? 'Todos los Sonidos Disponibles' 
+              : `Sonidos de ${selectedFilter}`}
+            {` (${filteredSounds.length})`}
+          </Text>
+          
+          {filteredSounds.length === 0 ? (
+            <View style={styles.noSoundsContainer}>
+              <Text style={styles.noSoundsText}>
+                No hay sonidos disponibles para el filtro seleccionado
+              </Text>
+            </View>
+          ) : (
+            filteredSounds.map(sound => (
+              <SoundItem
+                key={sound.id}
+                sound={sound}
+                isSelected={isSoundSelected(sound.id)}
+                //onToggleSelection es la función que se ejecuta cuando se selecciona o deselecciona un sonido.
+                //por eso aca se le pasa la funcion handleToggleSound, que es la que se encarga de agregar o quitar el sonido, a
+                //sound item. De esta forma, se evita que el componente SoundItem se vuelva a renderizar, y se evita que se vuelva a llamar a la funcion handleToggleSound.
+                onToggleSelection={handleToggleSound}
+              />
+            ))
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -198,7 +264,44 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
   },
+  filterSection: {
+    margin: 20,
+    marginTop: 10,
+    padding: 16,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#dee2e6',
+  },
+  filterLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#212529',
+    marginBottom: 8,
+  },
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    backgroundColor: '#f8f9fa',
+  },
+  picker: {
+    height: 50,
+  },
   availableSection: {
     margin: 20,
+  },
+  noSoundsContainer: {
+    padding: 20,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#dee2e6',
+    alignItems: 'center',
+  },
+  noSoundsText: {
+    fontSize: 16,
+    color: '#6c757d',
+    textAlign: 'center',
   },
 }); 
