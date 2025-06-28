@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function HomeScreen() {
   console.log('=== HomeScreen RENDER ===');
@@ -21,12 +22,16 @@ export default function HomeScreen() {
 
   // Cargar sonidos disponibles
   const [availableSounds, setAvailableSounds] = useState([]);
+  // Para obtener el nombre del usuiario que subió el audio
+  const { auth } = useAuth();
+  // Para resfrecar cada vez que se sube un audio
+  const [refresh, setRefresh] = useState(false);
 
   //se ejecuta cuando el componente se monta.
   useEffect(() => {
     const fetchSounds = async () => {
       try {
-        const sounds = await getSounds();
+        const sounds = await getSounds(auth.user._id);
         setAvailableSounds(sounds);
       } catch (error) {
         console.error('Error al obtener sonidos:', error);
@@ -34,7 +39,7 @@ export default function HomeScreen() {
     };
 
     fetchSounds();
-  }, []);
+  }, [refresh]);
 
   console.log('HomeScreen - selectedSounds:', selectedSounds?.length || 0);
   console.log('HomeScreen - addSound function:', typeof addSound);
@@ -94,7 +99,7 @@ export default function HomeScreen() {
           </View>
         )}
 
-        <ButtonUpload />
+        <ButtonUpload onUploadSuccess={() => setRefresh(prev => !prev)} />
 
         {/* Lista de todos los sonidos usando el componente SoundItem */}
         <View style={styles.availableSection}>

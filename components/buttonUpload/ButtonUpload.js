@@ -15,7 +15,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { saveSound } from "../../services/sounds";
 import { supabase } from "../../services/supabase";
 
-export default function ButtonUpload() {
+export default function ButtonUpload({ onUploadSuccess }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [title, setTitle] = useState("");
   const [file, setFile] = useState(null);
@@ -44,7 +44,7 @@ export default function ButtonUpload() {
       const blob = await response.blob();
 
       const { data, error } = await supabase.storage
-        .from("mixerloop")
+        .from("chorimixer")
         .upload(fileName, blob, {
           contentType: "audio/mpeg",
           upsert: false,
@@ -54,17 +54,17 @@ export default function ButtonUpload() {
 
       // Obtener la URL pública
       const { data: publicUrlData } = supabase.storage
-        .from("mixerloop")
+        .from("chorimixer")
         .getPublicUrl(fileName);
 
       const publicUrl = publicUrlData.publicUrl;
-
-      console.log(auth)
 
       await saveSound({ title, type, url: publicUrl, user: auth.user });
       console.log("Archivo subido. URL pública:", publicUrl);
 
       alert("¡Audio subido con éxito!");
+      if (onUploadSuccess) onUploadSuccess(); 
+
       setModalVisible(false);
       setTitle("");
       setFile(null);

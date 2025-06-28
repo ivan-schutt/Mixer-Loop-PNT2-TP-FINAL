@@ -1,7 +1,5 @@
 import { Audio } from 'expo-av';
-import React, { useRef, useState } from 'react';
-
-
+import { useRef, useState } from 'react';
 import {
   Alert,
   StyleSheet,
@@ -10,10 +8,10 @@ import {
   View,
 } from 'react-native';
 
-const SoundItem = ({ 
-  sound, 
-  isSelected, 
-  onToggleSelection 
+const SoundItem = ({
+  sound,
+  isSelected,
+  onToggleSelection
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -41,7 +39,7 @@ const SoundItem = ({
         // Crear el sonido.
         const { sound: audioSound } = await Audio.Sound.createAsync(
           sound.file,
-          { 
+          {
             shouldPlay: true,
             isLooping: false,
             volume: 0.7,
@@ -85,13 +83,14 @@ const SoundItem = ({
     <View style={[styles.container, isSelected && styles.selectedContainer]}>
       <View style={styles.soundInfo}>
         <Text style={styles.soundName}>{sound.name}</Text>
+        <Text style={styles.uploadedByText}>Subido por: {sound.userName || 'Desconocido'}</Text>
         <View style={styles.soundMeta}>
           <Text style={styles.soundCategory}>{sound.category}</Text>
           {sound.bpm && <Text style={styles.soundBpm}>{sound.bpm} BPM</Text>}
           {sound.duration && <Text style={styles.soundDuration}>{sound.duration}</Text>}
         </View>
       </View>
-      
+
       <View style={styles.buttonsContainer}>
         {/* Botón de Play/Preview */}
         <TouchableOpacity
@@ -103,7 +102,7 @@ const SoundItem = ({
             {isLoading ? '⏳' : isPlaying ? '⏹' : '▶'}
           </Text>
         </TouchableOpacity>
-        
+
         {/* Botón de Agregar/Quitar */}
         <TouchableOpacity
           style={[styles.toggleButton, isSelected && styles.selectedButton]}
@@ -208,6 +207,12 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 20,
     fontWeight: 'bold',
+  },
+  uploadedByText: {
+    fontSize: 12,
+    color: '#495057',
+    fontStyle: 'italic',
+    marginBottom: 4,
   },
 });
 

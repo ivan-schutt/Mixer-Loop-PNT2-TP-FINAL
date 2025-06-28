@@ -18,7 +18,7 @@ export default function LoginScreen() {
     console.log(`Intentando iniciar sesión con: ${email}`);
     
     try{
-          const response = await authService.login({email, password });
+          const response = await authService.login({ email, password });
           console.log('Usuario logueado:', response);
           setAuth(response)
       } catch (error) {
