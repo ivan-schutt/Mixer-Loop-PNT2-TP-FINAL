@@ -52,7 +52,6 @@ const updateSound = (sound) => {
       body: JSON.stringify(sound)
     })
       .then(response => {
-        console.log("response", response);
         if (response.ok) {
           resolve(true);
         } else {
@@ -66,18 +65,17 @@ const updateSound = (sound) => {
   });
 }
 
-const deleteSound = (sound) => {
+const deleteSound = (id) => {
   return new Promise((resolve, reject) => {
-    fetch(`${URL_API}/${sound.id}`, {
+    fetch(`${URL_API}/${id}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
         //'Authorization': 'Bearer ' + token
       },
-      body: JSON.stringify(sound)
+      //body: JSON.stringify(sound)
     })
       .then(response => {
-        console.log("response", response);
         if (response.ok) {
           resolve(true);
         } else {

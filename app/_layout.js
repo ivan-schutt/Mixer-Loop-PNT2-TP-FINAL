@@ -1,4 +1,5 @@
 import { AudioSyncProvider } from "@/contexts/AudioSyncContext";
+import { EventLogProvider } from "@/contexts/EventLogContext";
 import { SoundProvider } from "@/contexts/SoundContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import {
@@ -61,10 +62,12 @@ export default function RootLayout() {
     <AuthProvider>
       <SoundProvider>
         <AudioSyncProvider>
-          <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-            <ProtectedLayout />
-            <StatusBar style="auto" />
-          </ThemeProvider>
+          <EventLogProvider>
+            <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+              <ProtectedLayout />
+              <StatusBar style="auto" />
+            </ThemeProvider>
+          </EventLogProvider>
         </AudioSyncProvider>
       </SoundProvider>
     </AuthProvider>
