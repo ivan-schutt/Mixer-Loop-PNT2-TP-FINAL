@@ -2,7 +2,6 @@ import { createContext, useContext, useEffect, useState, } from "react";
 import AsyncStorage from "../services/AsyncStorage";
 import authService from "../services/authService";
 
-
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
@@ -10,30 +9,42 @@ export function AuthProvider({ children }) {
   const [isLoading, setLoading] = useState(true);
 
   useEffect(() => {
+    const validarUsuarioEnAsyncStorage = async () => {
+      try {
+        const data = await AsyncStorage.getData(authService.AUTH_KEY);
+        const userId = data?.user?._id;
 
-    AsyncStorage.getData(authService.AUTH_KEY).then((data) => {
-      console.log("Encuentro dato en el AsyncStorage", data);
-      if (data) {
-        setAuth(data);
+        if (data) {
+          const sigueExistiendo = await authService.validarUsuarioActivo(userId);
+
+          if (sigueExistiendo) {
+            setAuth(data);
+          } else {
+            console.warn("El usuario fue eliminado del backend. Limpiando sesión.");
+            await AsyncStorage.clearData();
+            setAuth(null);
+          }
+        }
+      } catch (err) {
+        console.error("Error al leer o validar AsyncStorage:", err);
+      } finally {
+        setLoading(false);
       }
-    }).catch((err) => {
-        console.error("Error al leer AsyncStorage", err);
-      }).finally(() => {
-          setLoading(false);
-        });;
+    };
+
+    validarUsuarioEnAsyncStorage();
   }, []);
 
   useEffect(() => {
-    console.log("Cambio el estado de auth", auth);
     if (auth) {
       console.log("Procedo a modificar el AsyncStorage");
       AsyncStorage.storeData(authService.AUTH_KEY, auth);
-    }else{
+    } else {
       AsyncStorage.clearData();
     }
   }, [auth]);
 
-  return <AuthContext.Provider value={{ auth, setAuth, isLoading  }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ auth, setAuth, isLoading }}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {

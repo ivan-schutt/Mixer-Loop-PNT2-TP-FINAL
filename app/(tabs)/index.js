@@ -178,6 +178,7 @@ export default function HomeScreen() {
                 //por eso aca se le pasa la funcion handleToggleSound, que es la que se encarga de agregar o quitar el sonido, a
                 //sound item. De esta forma, se evita que el componente SoundItem se vuelva a renderizar, y se evita que se vuelva a llamar a la funcion handleToggleSound.
                 onToggleSelection={handleToggleSound}
+                onRefresh={() => setRefresh(prev => !prev)}
               />
             ))
           )}

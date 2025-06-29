@@ -1,7 +1,7 @@
 const AUTH_KEY = "@auth_data";
 import axios from "axios";
 
-const login = async ({email, password }) => {
+const login = async ({ email, password }) => {
   console.log(email, password)
   try {
     const response = await axios.post('http://localhost:8080/api/users/login', {
@@ -31,8 +31,22 @@ const register = async ({ nombre, email, password }) => {
   }
 };
 
+const validarUsuarioActivo = async (id) => {
+  //if (!id) return false;
+
+  try {
+    const response = await axios.get(`http://localhost:8080/api/users/${id}`);
+
+    return response.data !== null;
+  } catch (error) {
+    console.error("Error validando usuario:", error);
+    return false;
+  }
+};
+
 export default {
   login,
   register,
-  AUTH_KEY,
+  validarUsuarioActivo,
+  AUTH_KEY
 };

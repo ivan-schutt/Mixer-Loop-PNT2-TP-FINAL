@@ -12,7 +12,6 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import { AuthProvider, useAuth } from "../contexts/AuthContext";
 
-
 SplashScreen.preventAutoHideAsync();
 
 function ProtectedLayout() {

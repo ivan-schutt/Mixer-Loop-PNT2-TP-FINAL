@@ -1,4 +1,3 @@
-// components/ButtonUpload.js
 import { Picker } from "@react-native-picker/picker";
 import * as DocumentPicker from "expo-document-picker";
 import { useState } from "react";
@@ -66,14 +65,19 @@ export default function ButtonUpload({ onUploadSuccess }) {
       //si onUploadSuccess es truthy, se llama a la funcion onUploadSuccess.
       if (onUploadSuccess) onUploadSuccess(); 
 
-      setModalVisible(false);
-      setTitle("");
-      setFile(null);
+      resetHooks()
+      
     } catch (error) {
       console.error("Error al subir el archivo:", error);
       alert("Hubo un error al subir el archivo.");
     }
-  };
+  }
+
+    const resetHooks = _ => {
+    setModalVisible(false);
+    setTitle("");
+    setFile(null);
+  }
 
   return (
     <View style={styles.card}>

@@ -7,18 +7,20 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-
+import { useAuth } from "../../contexts/AuthContext.js";
+import EditSoundButton from '../editSoundButton/index.js';
 
 const SoundItem = ({
   sound,
   isSelected,
-  onToggleSelection
+  onToggleSelection,
+  onRefresh
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   // Referencia al sonido, a diferencia de useState, no causa un re-renderizado del componente cuando se actualiza.
   const soundRef = useRef(null);
-  
+  const { auth } = useAuth();
 
   const handlePlayPreview = async () => {
     try {
@@ -31,14 +33,12 @@ const SoundItem = ({
           await soundRef.current.unloadAsync();
           //Sirve limpiar la referencia al sonido, para evitar posibles problemas de memoria.
           soundRef.current = null;
-        
+
         }
         setIsPlaying(false);
       } else {
         // Si no está reproduciéndose, iniciar
         setIsLoading(true);
-       
-
 
         // Crear el sonido.
         const { sound: audioSound } = await Audio.Sound.createAsync(
@@ -81,7 +81,9 @@ const SoundItem = ({
     //onToggleSelection es la función que se ejecuta cuando se selecciona o deselecciona un sonido.
     //por dentro tiene la funcion handleToggleSound de homescreen o index.js en screens o tabs, que es la que se encarga de agregar o quitar el sonido.
     onToggleSelection(sound);
-  };
+  }; 
+
+  const isOwner = auth?.user?._id === sound.userId || auth?.user?._id === sound.auth;
 
   return (
     <View style={[styles.container, isSelected && styles.selectedContainer]}>
@@ -96,6 +98,17 @@ const SoundItem = ({
       </View>
 
       <View style={styles.buttonsContainer}>
+        {/* Mostrar botón de edición sólo si el usuario es dueño del sonido */}
+        {isOwner && (
+          <EditSoundButton
+            soundData={sound}
+            onUploadSuccess={() => {
+              console.log("Audio editado");
+              if (onRefresh) onRefresh()
+            }}
+          />
+        )}
+
         {/* Botón de Play/Preview */}
         <TouchableOpacity
           style={[styles.playButton, isPlaying && styles.playingButton]}
@@ -107,7 +120,7 @@ const SoundItem = ({
           </Text>
         </TouchableOpacity>
 
-        {/* Botón de Agregar/Quitar */}
+        {/* Botón de Agregar/Quitar selección */}
         <TouchableOpacity
           style={[styles.toggleButton, isSelected && styles.selectedButton]}
           onPress={handleToggleSelection}
@@ -121,9 +134,10 @@ const SoundItem = ({
   );
 };
 
+// Estilos del componente
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
+    flexDirection: 'row', // Para mostrar info y botones en fila
     alignItems: 'center',
     backgroundColor: '#fff',
     padding: 16,
@@ -176,7 +190,7 @@ const styles = StyleSheet.create({
     color: '#6c757d',
   },
   buttonsContainer: {
-    flexDirection: 'row',
+    flexDirection: 'row', // Para que los botones estén en fila
     alignItems: 'center',
     gap: 8,
   },
@@ -220,4 +234,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SoundItem; 
+export default SoundItem;
