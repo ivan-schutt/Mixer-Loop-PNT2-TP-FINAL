@@ -1,10 +1,12 @@
 import { useAudioSyncContext } from "@/contexts/AudioSyncContext";
+import { useEventLogContext } from "@/contexts/EventLogContext";
 import { Audio } from "expo-av";
 import { useEffect, useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity } from "react-native";
 
 const LoopButton = ({ soundData, onSoundChange }) => {
-  const { addActiveTrack, removeActiveTrack, currentCount } = useAudioSyncContext();
+  const { addActiveTrack, removeActiveTrack, currentCount, beats } = useAudioSyncContext();
+  const { addEvent } = useEventLogContext();
   const [sound, setSound] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -26,11 +28,13 @@ const LoopButton = ({ soundData, onSoundChange }) => {
     if (currentCount === 1 && shouldListen && isPlayingOnSync === false && cuedForPlayback === true) {
       sound.playAsync();
       setIsPlayingOnSync(true);
-      setShouldListen(false);
+      setShouldListen(false);     
+      registerPlaybackEvent('play');
     } else if ((currentCount === 1 || currentCount === 0) && shouldListen && isPlayingOnSync === true) {
       sound.stopAsync();
       setIsPlayingOnSync(false);
-      setShouldListen(false);
+      setShouldListen(false);      
+      registerPlaybackEvent('stop');
     }
   }, [currentCount, shouldListen]);
 
@@ -143,6 +147,15 @@ const LoopButton = ({ soundData, onSoundChange }) => {
     } catch (error) {
       console.error("Error controlando la reproducción:", error);
       Alert.alert("Error", "No se pudo controlar la reproducción");
+    }
+  };
+
+  // Función auxiliar para registrar eventos de reproducción
+  const registerPlaybackEvent = (action) => {
+    if (soundData && soundData.file) {
+      const timeInSeconds = beats.current * 0.5;
+      const soundUrl = soundData.file.uri || soundData.file || soundData.name;
+      addEvent(soundUrl, timeInSeconds, action);
     }
   };
 

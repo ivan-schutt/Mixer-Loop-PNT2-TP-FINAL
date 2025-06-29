@@ -57,24 +57,33 @@ export const AudioSyncProvider = ({ children }) => {
           newCount = 1;
         }
 
+        // Incrementar el contador total de beats
+        beats.current++;
+
         return newCount;
       });
     }, BEAT_DURATION);
   };
 
   const stopSync = () => {
-    //por ahora voy a hacer que reinicie , pero despues deberiamos evaluar si hacemos lo de la session, lo charlamos.
     //detener el interval
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
     setIsPlaying(false);
-    restartSync();
+    // Solo resetear el contador visual, NO los beats totales
+    setCurrentCount(0);
   };
 
   const restartSync = () => {
     setCurrentCount(0);
+    beats.current = 0;
+    currentBar.current = 1;
+  };
+
+  // Nueva función para resetear beats manualmente (llamada desde EventLogContext)
+  const resetBeats = () => {
     beats.current = 0;
     currentBar.current = 1;
   };
@@ -93,7 +102,7 @@ export const AudioSyncProvider = ({ children }) => {
       activeTracks.current--;
 
       if (activeTracks.current === 0) {
-        //cuando se retire el último track se detiene y reinicia
+        //cuando se retire el último track se detiene PERO NO se reinicia automáticamente
         stopSync();
       }
     }
@@ -108,7 +117,8 @@ export const AudioSyncProvider = ({ children }) => {
         currentBar,
         activeTracks,
         addActiveTrack,
-        removeActiveTrack
+        removeActiveTrack,
+        resetBeats
       }}
     >
       {children}

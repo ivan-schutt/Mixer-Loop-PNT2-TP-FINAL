@@ -1,6 +1,7 @@
 import Counter from "@/components/counter";
 import LoopButton from "@/components/loopButton";
 import MicRecButton from "@/components/MicRecButton";
+import SessionRecButton from "@/components/SessionRecButton";
 import { useSoundContext } from "@/contexts/SoundContext";
 import { useEffect, useState } from "react";
 import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -70,6 +71,9 @@ export default function MixerScreen() {
           </Text>
         </View>
         <Counter />
+        <View style={styles.sessionRecContainer}>
+          <SessionRecButton />
+        </View>
         <View>
           <MicRecButton handleNewRecordedSound={(sound) => {
             setButtonSounds((prev) => {
@@ -223,5 +227,12 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 12,
     fontWeight: 'bold',
+  },
+  sessionRecContainer: {
+    alignItems: 'center',
+    paddingVertical: 10,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e9ecef',
   },
 }); 
