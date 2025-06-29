@@ -10,7 +10,6 @@ export default function MixerScreen() {
   const [soundLibraryVisible, setSoundLibraryVisible] = useState(false);
   const [selectedButtonIndex, setSelectedButtonIndex] = useState(null);
   const [buttonSounds, setButtonSounds] = useState([null, null, null, null]);
-
   const { selectedSounds } = useSoundContext();
 
   useEffect(() => {

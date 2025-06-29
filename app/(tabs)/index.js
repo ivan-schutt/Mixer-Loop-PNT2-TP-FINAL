@@ -20,7 +20,6 @@ export default function HomeScreen() {
 
   // Obtener contexto
   const { selectedSounds, addSound, removeSound, isSoundSelected } = useSoundContext();
-
   // Cargar sonidos disponibles
   const [availableSounds, setAvailableSounds] = useState([]);
   // Para obtener el nombre del usuiario que subió el audio

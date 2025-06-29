@@ -9,17 +9,18 @@ import {
   TouchableOpacity,
   View
 } from "react-native";
-import { updateSound } from "../../services/sounds";
+import { deleteSound, updateSound } from "../../services/sounds";
 
 const EditSoundButton = ({ soundData, onUploadSuccess }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [title, setTitle] = useState("");
   const [type, setType] = useState("");
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
 
   useEffect(() => {
     if (soundData) {
-      setTitle(soundData.name || ""); // O la propiedad que corresponda para título
-      setType(soundData.category || ""); // O la propiedad tipo que corresponda
+      setTitle(soundData.name || ""); 
+      setType(soundData.category || ""); 
     }
   }, [soundData]);
 
@@ -40,6 +41,21 @@ const EditSoundButton = ({ soundData, onUploadSuccess }) => {
     } catch (error) {
       console.error("Error al editar el archivo:", error);
       alert("Hubo un error al editar el archivo.");
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await deleteSound(soundData.id);
+      alert("Audio eliminado con éxito");
+
+      if (onUploadSuccess) onUploadSuccess();
+
+      setShowConfirmDelete(false);
+      setModalVisible(false);
+    } catch (error) {
+      console.error("Error al eliminar el archivo:", error);
+      alert("Hubo un error al eliminar el archivo.");
     }
   };
 
@@ -80,7 +96,25 @@ const EditSoundButton = ({ soundData, onUploadSuccess }) => {
 
             <View style={styles.buttonRow}>
               <Button title="Cancelar" onPress={() => setModalVisible(false)} />
-              <Button title="Editar" onPress={handleEdit} />
+              <Button title="Eliminar" color="red" onPress={() => setShowConfirmDelete(true)} />
+              <Button title="Editar" color="orange" onPress={handleEdit} />
+            </View>
+          </View>
+        </View>
+      </Modal>
+      {/* Modal de confirmación para eliminar */}
+      <Modal visible={showConfirmDelete} animationType="fade" transparent={true}>
+        <View style={styles.modalBackground}>
+          <View style={styles.confirmModal}>
+            <Text style={styles.confirmText}>
+              ¿Seguro que quiere eliminar este audio?
+            </Text>
+            <Text style={{ marginBottom: 16 }}>
+              El sonido no podrá ser recuperado una vez eliminado.
+            </Text>
+            <View style={styles.buttonRow}>
+              <Button title="Cancelar" onPress={() => setShowConfirmDelete(false)} />
+              <Button title="Eliminar" color="red" onPress={handleDelete} />
             </View>
           </View>
         </View>
@@ -91,7 +125,7 @@ const EditSoundButton = ({ soundData, onUploadSuccess }) => {
 
 const styles = StyleSheet.create({
   editButton: {
-    backgroundColor: "#fd7e14", // naranja
+    backgroundColor: "#fd7e14",
     width: 40,
     height: 40,
     borderRadius: 20,
@@ -116,6 +150,19 @@ const styles = StyleSheet.create({
     padding: 24,
     width: "88%",
   },
+  confirmModal: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 24,
+    width: "80%",
+    alignItems: "center",
+  },
+  confirmText: {
+    fontWeight: "bold",
+    fontSize: 16,
+    marginBottom: 8,
+    textAlign: "center",
+  },
   label: {
     fontWeight: "bold",
     marginBottom: 4,
@@ -136,6 +183,7 @@ const styles = StyleSheet.create({
   buttonRow: {
     flexDirection: "row",
     justifyContent: "space-between",
+    gap: 8,
   },
 });
 
