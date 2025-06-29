@@ -1,36 +1,52 @@
 import { Audio } from 'expo-av';
 import { useEffect, useState } from 'react';
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useAuth } from "../../contexts/AuthContext";
 import { useSoundContext } from '../../contexts/SoundContext';
+import { saveSound } from "../../services/sounds";
+import { supabase } from "../../services/supabase";
 
 const MicRecButton = ({ handleNewRecordedSound }) => {
   const [recording, setRecording] = useState(null);
   const { addSound } = useSoundContext();
-  const [recordingCount, setRecordingCount] = useState(1);
+  const [isMicAvailable, setIsMicAvailable] = useState(false);
+  const [hasPermission, setHasPermission] = useState(false);
+  const { auth } = useAuth();
 
   useEffect(() => {
-  const handleKeyDown = (event) => {
-    if (event.key === 'r' || event.key === 'R') {
-      if (recording) {
-        stopRecordingAndSave();
-      } else {
-        startRecording();
+    checkPermission()
+    checkMicAvailable()
+  })
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'r' || event.key === 'R') {
+        if (recording) {
+          stopRecordingAndSave();
+        } else {
+          startRecording();
+        }
       }
-    }
-  };
+    };
 
-  window.addEventListener('keydown', handleKeyDown);
-
-  return () => {
-    window.removeEventListener('keydown', handleKeyDown);
-  };
-}, [recording]);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [recording]);
 
   const startRecording = async () => {
     try {
-      const permission = await Audio.requestPermissionsAsync();
-      if (!permission.granted) {
-        Alert.alert('Permiso denegado', 'Se necesita permiso para grabar audio');
+
+      const permission = await checkPermission();
+      if (!permission) {
+        alert('Permiso denegado. Se necesita permiso para grabar audio');
+        return;
+      }
+
+      const micAvailable = await checkMicAvailable();
+      if (!micAvailable) {
+        alert('Sin micrófono. No se detectó ningún micrófono disponible.');
         return;
       }
 
@@ -39,7 +55,7 @@ const MicRecButton = ({ handleNewRecordedSound }) => {
       );
 
       setRecording(newRecording);
-      
+
     } catch (err) {
       console.error('Error al comenzar la grabación:', err);
     }
@@ -51,10 +67,49 @@ const MicRecButton = ({ handleNewRecordedSound }) => {
       const uri = recording.getURI();
       if (!uri) throw new Error('No se obtuvo URI del audio grabado');
 
+
+      const title = `Rec Mic ${getFormattedDateTime()}`;
+      const type = 'MICREC';
+
+      // Convertir a blob
+      const response = await fetch(uri);
+      const blob = await response.blob();
+
+      // Nombre de archivo único
+      const fileName = `${Date.now()}_micrec.mp3`;
+
+      // Subir a Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from('chorimixer')
+        .upload(fileName, blob, {
+          contentType: 'audio/mpeg',
+          upsert: false,
+        });
+
+      if (uploadError) throw uploadError;
+
+      // Obtener URL pública
+      const { data: publicUrlData, error: urlError } = supabase.storage
+        .from('chorimixer')
+        .getPublicUrl(fileName);
+
+      if (urlError) throw urlError;
+
+      const publicUrl = publicUrlData.publicUrl;
+
+      // Guardar en DB
+      const sonidoGuardado = await saveSound({
+        title,
+        type,
+        url: publicUrl,
+        user: auth.user,
+      });
+
       const newSound = {
-        id: Date.now().toString(),
-        name: `Rec Mic ${recordingCount}`,
-        file: { uri },
+        id: sonidoGuardado.id,
+        name: sonidoGuardado.title,
+        file: { uri: sonidoGuardado.url },
+        type: sonidoGuardado.type,
         fromMic: true
       };
 
@@ -64,29 +119,74 @@ const MicRecButton = ({ handleNewRecordedSound }) => {
         handleNewRecordedSound(newSound);
       }
 
-      setRecordingCount(prev => prev + 1);
-
+      console.log('Grabación subida y guardada con éxito:', publicUrl);
     } catch (error) {
-      console.error('Error grabando audio:', error);
-      Alert.alert('Error', 'No se pudo guardar la grabación');
+      console.error('Error grabando o subiendo audio:', error);
+      alert('Error. No se pudo guardar la grabación');
     } finally {
       setRecording(null);
     }
   };
 
+  const checkPermission = async () => {
+    try {
+      const permission = await Audio.getPermissionsAsync();
+      setHasPermission(permission.granted);
+      return permission.granted;
+    } catch (err) {
+      console.warn('Error al pedir permisos:', err);
+      setHasPermission(false);
+      return false;
+    }
+  };
+
+  const checkMicAvailable = async () => {
+    try {
+      if (typeof navigator !== 'undefined' && navigator.mediaDevices?.enumerateDevices) {
+        await navigator.mediaDevices.getUserMedia({ audio: true }); // esto puede lanzar error si no hay mic
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const micAvailable = devices.some(device => device.kind === 'audioinput');
+        setIsMicAvailable(micAvailable);
+        return micAvailable;
+      } else {
+        setIsMicAvailable(true);
+        return true;
+      }
+    } catch (err) {
+      setIsMicAvailable(false);
+      return false;
+    }
+  };
+
+  const getFormattedDateTime = () => {
+    const now = new Date();
+    const pad = (n) => n.toString().padStart(2, '0');
+
+    const year = now.getFullYear();
+    const month = pad(now.getMonth() + 1); 
+    const day = pad(now.getDate());
+    const hour = pad(now.getHours());
+    const min = pad(now.getMinutes());
+    const sec = pad(now.getSeconds());
+
+    return `${year}-${month}-${day} ${hour}:${min}:${sec}`;
+  };
+
   return (
     <View style={styles.container}>
       <TouchableOpacity
-        style={[styles.button, recording ? styles.buttonRecording : styles.buttonIdle]}
-        onPress={() => recording ? stopRecordingAndSave(recording) : startRecording()}
+        style={[
+          styles.button,
+          recording ? styles.buttonRecording : styles.buttonIdle,
+          (!hasPermission || !isMicAvailable) && { opacity: 0.4 },
+        ]}
+        onPress={() => (recording ? stopRecordingAndSave() : startRecording())}
       >
         <Text style={styles.buttonText}>{recording ? 'STOP' : 'REC MIC'}</Text>
       </TouchableOpacity>
     </View>
   );
-};
-
-export default MicRecButton;
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -112,3 +212,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
 });
+
+export default MicRecButton;
