@@ -1,4 +1,5 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
+import { useSoundsContext } from './SoundsContext';
 
 const SelectedContext = createContext();
 
@@ -7,24 +8,38 @@ export const UseSelectedContext = () => {
   if (!context) {
     throw new Error('UseSelectedContext debe usarse dentro de SelectedProvider');
   }
-  
+
   // Log cada vez que se accede al contexto
   console.log('=== UseSelectedContext llamado ===');
   console.log('selectedSounds count:', context.selectedSounds?.length || 0);
   console.log('selectedSounds:', context.selectedSounds?.map(s => s.name) || []);
   console.log('=== fin UseSelectedContext ===');
-  
+
   return context;
 };
 
 export const SelectedProvider = ({ children }) => {
   const [selectedSounds, setSelectedSounds] = useState([]);
+  const { availableSounds: existingSounds } = useSoundsContext();
+
+  useEffect(() => {
+    if (!existingSounds || existingSounds.length === 0) return;
+
+    const existingIds = new Set(existingSounds.map(s => s.id));
+
+    setSelectedSounds(prevSelected => {
+      const filtered = prevSelected.filter(s => existingIds.has(s.id));
+      console.log('=== syncSelectedSounds ===');
+      console.log('Audios seleccionados luego del sync:', filtered.map(s => s.name));
+      return filtered;
+    });
+  }, [existingSounds]);
 
   const addSound = (sound) => {
     console.log('=== ADD SOUND ===');
     console.log('Agregando sonido al contexto:', sound.name, 'ID:', sound.id);
     console.log('Sonidos antes de agregar:', selectedSounds.length);
-    
+
     // Verificar si el sonido ya está seleccionado. some es un metodo que se usa para verificar si un elemento existe en un array.
     //some devuelve un booleano. verifica todos los elementos del array y si alguno coincide con el id del sonido que se esta agregando, retorna true.
     const isAlreadySelected = selectedSounds.some(s => s.id === sound.id);
@@ -46,7 +61,7 @@ export const SelectedProvider = ({ children }) => {
     console.log('=== REMOVE SOUND ===');
     console.log('Removiendo sonido del contexto:', soundId);
     console.log('Sonidos antes de remover:', selectedSounds.length);
-    
+
     setSelectedSounds(prev => {
       //se utiliza filter para filtrar los elementos del array
       //lo que estaria haciendo es agregar al nuevo array los elementos que no tengan el id que se esta removiendo. 

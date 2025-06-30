@@ -50,10 +50,7 @@ function ProtectedLayout() {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  const [loaded, error] = useFonts({
-    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
-  });
-
+  const [loaded, error] = useFonts({ SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"), });
 
   if (!loaded) {
     return null;
