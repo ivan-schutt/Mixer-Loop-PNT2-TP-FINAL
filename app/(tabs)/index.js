@@ -1,9 +1,8 @@
 import ButtonUpload from '@/components/buttonUpload/ButtonUpload';
 import SoundItem from '@/components/soundItem';
 import { useSoundContext } from '@/contexts/SoundContext';
-import { getSounds } from '@/services/sounds';
 import { Picker } from "@react-native-picker/picker";
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   Alert,
   SafeAreaView,
@@ -14,20 +13,19 @@ import {
   View
 } from 'react-native';
 import { useAuth } from "../../contexts/AuthContext";
+import { useAvailableContext } from '../../contexts/AvailableSoundsContext';
 
 export default function HomeScreen() {
   console.log('=== HomeScreen RENDER ===');
 
   // Obtener contexto
   const { selectedSounds, addSound, removeSound, isSoundSelected } = useSoundContext();
-  // Cargar sonidos disponibles
-  const [availableSounds, setAvailableSounds] = useState([]);
   // Para obtener el nombre del usuiario que subió el audio
   const { auth } = useAuth();
-  // Para resfrecar cada vez que se sube un audio
-  const [refresh, setRefresh] = useState(false);
   // Para filtrar sonidos por tipo
   const [selectedFilter, setSelectedFilter] = useState('TODOS');
+  // Para refrescar y obtener sonidos del backend
+  const { availableSounds , toggleRefresh } = useAvailableContext();
 
   // Generar tipos de sonidos disponibles dinámicamente
   const soundTypes = (() => {
@@ -37,7 +35,6 @@ export default function HomeScreen() {
         .map(sound => sound.category || sound.type)
         .filter(type => type) // Filtrar valores null/undefined
     )];
-
     // Crear array con "Todos" primero, luego los tipos encontrados
     return [
       { label: 'Todos los sonidos', value: 'TODOS' },
@@ -48,25 +45,10 @@ export default function HomeScreen() {
     ];
   })();
 
-  //se ejecuta cuando el componente se monta.
-  useEffect(() => {
-    const fetchSounds = async () => {
-      try {
-        const sounds = await getSounds(auth.user._id);
-        setAvailableSounds(sounds);
-        console.log("refresh", refresh);
-      } catch (error) {
-        console.error('Error al obtener sonidos:', error);
-      }
-    };
-
-    fetchSounds();
-  }, [refresh]);
-
   // Filtrar sonidos según el tipo seleccionado
   const filteredSounds = availableSounds.filter(sound => {
-    if (selectedFilter === 'TODOS') return true; 
-    
+    if (selectedFilter === 'TODOS') return true;
+
     return sound.category === selectedFilter || sound.type === selectedFilter;
   });
 
@@ -134,7 +116,7 @@ export default function HomeScreen() {
           </View>
         )}
 
-        <ButtonUpload onUploadSuccess={() => setRefresh(prev => !prev)} />
+        <ButtonUpload onUploadSuccess={toggleRefresh} />
 
         {/* Filtro de sonidos */}
         <View style={styles.filterSection}>
@@ -155,12 +137,12 @@ export default function HomeScreen() {
         {/* Lista de todos los sonidos usando el componente SoundItem */}
         <View style={styles.availableSection}>
           <Text style={styles.sectionTitle}>
-            {selectedFilter === 'TODOS' 
-              ? 'Todos los Sonidos Disponibles' 
+            {selectedFilter === 'TODOS'
+              ? 'Todos los Sonidos Disponibles'
               : `Sonidos de ${selectedFilter}`}
             {` (${filteredSounds.length})`}
           </Text>
-          
+
           {filteredSounds.length === 0 ? (
             <View style={styles.noSoundsContainer}>
               <Text style={styles.noSoundsText}>
@@ -177,7 +159,7 @@ export default function HomeScreen() {
                 //por eso aca se le pasa la funcion handleToggleSound, que es la que se encarga de agregar o quitar el sonido, a
                 //sound item. De esta forma, se evita que el componente SoundItem se vuelva a renderizar, y se evita que se vuelva a llamar a la funcion handleToggleSound.
                 onToggleSelection={handleToggleSound}
-                onRefresh={() => setRefresh(prev => !prev)}
+                onUploadSuccess={toggleRefresh}
               />
             ))
           )}

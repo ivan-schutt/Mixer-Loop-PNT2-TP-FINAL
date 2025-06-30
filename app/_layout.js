@@ -1,4 +1,5 @@
 import { AudioSyncProvider } from "@/contexts/AudioSyncContext";
+import { AvailableSoundsProvider } from "@/contexts/AvailableSoundsContext";
 import { EventLogProvider } from "@/contexts/EventLogContext";
 import { SoundProvider } from "@/contexts/SoundContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -21,7 +22,7 @@ function ProtectedLayout() {
   const router = useRouter();
 
   useEffect(() => {
-   if (isLoading) {
+    if (isLoading) {
       return;
     }
 
@@ -34,17 +35,17 @@ function ProtectedLayout() {
     } else if (auth && inAuthGroup) {
       router.replace("/(tabs)");
     }
-  }, [isLoading, auth, segments]); 
+  }, [isLoading, auth, segments]);
 
-    if (isLoading) {
+  if (isLoading) {
     return null;
   }
 
   return <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="(auth)"  />
-      <Stack.Screen name="(tabs)"  />
-      <Stack.Screen name="+not-found" />
-    </Stack>;
+    <Stack.Screen name="(auth)" />
+    <Stack.Screen name="(tabs)" />
+    <Stack.Screen name="+not-found" />
+  </Stack>;
 }
 
 export default function RootLayout() {
@@ -52,24 +53,26 @@ export default function RootLayout() {
   const [loaded, error] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
-  
-  
+
+
   if (!loaded) {
     return null;
   }
 
   return (
     <AuthProvider>
-      <SoundProvider>
-        <AudioSyncProvider>
-          <EventLogProvider>
-            <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-              <ProtectedLayout />
-              <StatusBar style="auto" />
-            </ThemeProvider>
-          </EventLogProvider>
-        </AudioSyncProvider>
-      </SoundProvider>
+      <AvailableSoundsProvider>
+        <SoundProvider>
+          <AudioSyncProvider>
+            <EventLogProvider>
+              <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+                <ProtectedLayout />
+                <StatusBar style="auto" />
+              </ThemeProvider>
+            </EventLogProvider>
+          </AudioSyncProvider>
+        </SoundProvider>
+      </AvailableSoundsProvider>
     </AuthProvider>
   );
 }

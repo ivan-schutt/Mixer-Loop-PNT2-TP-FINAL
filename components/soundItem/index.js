@@ -14,7 +14,7 @@ const SoundItem = ({
   sound,
   isSelected,
   onToggleSelection,
-  onRefresh
+  onUploadSuccess
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -81,7 +81,7 @@ const SoundItem = ({
     //onToggleSelection es la función que se ejecuta cuando se selecciona o deselecciona un sonido.
     //por dentro tiene la funcion handleToggleSound de homescreen o index.js en screens o tabs, que es la que se encarga de agregar o quitar el sonido.
     onToggleSelection(sound);
-  }; 
+  };
 
   const isOwner = auth?.user?._id === sound.userId || auth?.user?._id === sound.auth;
 
@@ -104,7 +104,7 @@ const SoundItem = ({
             soundData={sound}
             onUploadSuccess={() => {
               console.log("Audio editado");
-              if (onRefresh) onRefresh()
+              if (onUploadSuccess) onUploadSuccess()
             }}
           />
         )}

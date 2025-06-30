@@ -2,6 +2,7 @@ import { Audio } from 'expo-av';
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useAuth } from "../../contexts/AuthContext";
+import { useAvailableContext } from '../../contexts/AvailableSoundsContext';
 import { useSoundContext } from '../../contexts/SoundContext';
 import { saveSound } from "../../services/sounds";
 import { supabase } from "../../services/supabase";
@@ -12,6 +13,7 @@ const MicRecButton = ({ handleNewRecordedSound }) => {
   const [isMicAvailable, setIsMicAvailable] = useState(false);
   const [hasPermission, setHasPermission] = useState(false);
   const { auth } = useAuth();
+  const { toggleRefresh } = useAvailableContext();
 
   useEffect(() => {
     checkPermission()
@@ -37,7 +39,6 @@ const MicRecButton = ({ handleNewRecordedSound }) => {
 
   const startRecording = async () => {
     try {
-
       const permission = await checkPermission();
       if (!permission) {
         alert('Permiso denegado. Se necesita permiso para grabar audio');
@@ -50,11 +51,10 @@ const MicRecButton = ({ handleNewRecordedSound }) => {
         return;
       }
 
-      const { recording: newRecording } = await Audio.Recording.createAsync(
-        Audio.RecordingOptionsPresets.HI_QUALITY // Ver si es HI_QUALITY o LOW_QUALITY
-      );
-
-      setRecording(newRecording);
+      const recording = new Audio.Recording();
+      await recording.prepareToRecordAsync(Audio.RecordingOptionsPresets.LOW_QUALITY);
+      await recording.startAsync();
+      setRecording(recording);
 
     } catch (err) {
       console.error('Error al comenzar la grabación:', err);
@@ -66,7 +66,6 @@ const MicRecButton = ({ handleNewRecordedSound }) => {
       await recording.stopAndUnloadAsync();
       const uri = recording.getURI();
       if (!uri) throw new Error('No se obtuvo URI del audio grabado');
-
 
       const title = `Rec Mic ${getFormattedDateTime()}`;
       const type = 'MICREC';
@@ -114,10 +113,8 @@ const MicRecButton = ({ handleNewRecordedSound }) => {
       };
 
       addSound(newSound);
-
-      if (handleNewRecordedSound) {
-        handleNewRecordedSound(newSound);
-      }
+      if (handleNewRecordedSound) handleNewRecordedSound(newSound);
+      if (toggleRefresh) toggleRefresh();
 
       console.log('Grabación subida y guardada con éxito:', publicUrl);
     } catch (error) {
@@ -143,7 +140,7 @@ const MicRecButton = ({ handleNewRecordedSound }) => {
   const checkMicAvailable = async () => {
     try {
       if (typeof navigator !== 'undefined' && navigator.mediaDevices?.enumerateDevices) {
-        await navigator.mediaDevices.getUserMedia({ audio: true }); // esto puede lanzar error si no hay mic
+        await navigator.mediaDevices.getUserMedia({ audio: true }); 
         const devices = await navigator.mediaDevices.enumerateDevices();
         const micAvailable = devices.some(device => device.kind === 'audioinput');
         setIsMicAvailable(micAvailable);
@@ -163,7 +160,7 @@ const MicRecButton = ({ handleNewRecordedSound }) => {
     const pad = (n) => n.toString().padStart(2, '0');
 
     const year = now.getFullYear();
-    const month = pad(now.getMonth() + 1); 
+    const month = pad(now.getMonth() + 1);
     const day = pad(now.getDate());
     const hour = pad(now.getHours());
     const min = pad(now.getMinutes());
