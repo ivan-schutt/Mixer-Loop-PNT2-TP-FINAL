@@ -2,7 +2,7 @@ import Counter from "@/components/counter";
 import LoopButton from "@/components/loopButton";
 import MicRecButton from "@/components/MicRecButton";
 import SessionRecButton from "@/components/SessionRecButton";
-import { UseSelectedContext } from "@/contexts/SelectedContext";
+import { useSelectedContext } from "@/contexts/SelectedContext";
 import { useEffect, useState } from "react";
 import {
   FlatList,
@@ -20,11 +20,20 @@ export default function MixerScreen() {
   //const COLS = 4;
   const [soundLibraryVisible, setSoundLibraryVisible] = useState(false);
   const [selectedButtonIndex, setSelectedButtonIndex] = useState(null);
-  const { selectedSounds } = UseSelectedContext();
+  const { selectedSounds } = useSelectedContext();
   const [buttonSounds, setButtonSounds] = useState(Array(PADS_TOTAL).fill(null));
 
   useEffect(() => {
     console.log('MixerScreen - Sonidos disponibles en contexto:', selectedSounds.length);
+/*     setButtonSounds(prevButtonSounds => {
+      const selectedIds = new Set(selectedSounds.map(s => s.id));
+      return prevButtonSounds.map(sound => {
+        if (sound && !selectedIds.has(sound.id)) {
+          return null; // limpiar botón si sonido no existe
+        }
+        return sound;
+      });
+    }); */
   }, [selectedSounds]);
 
   const handleSoundChange = (buttonIndex) => {

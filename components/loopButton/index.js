@@ -21,6 +21,16 @@ const LoopButton = ({ soundData, onSoundChange }) => {
   //que el componente no este usando useEffect todo el tiempo, sino solo cuando se necesite.
   const [shouldListen, setShouldListen] = useState(false);
 
+/*   useEffect(() => {
+    if (!soundData) {
+      setSound(null);
+      setIsPlaying(false);
+      setCuedForPlayback(false);
+      setShouldListen(false);
+      setIsPlayingOnSync(false);
+    }
+  }, [soundData]); */
+
   //en principio que queria aplicar use effect con condicional del esitlo, shouldListen ? [currentCount] : []); 
   //para que solo se ejecute cuando se ncesite, pero use effect de esa forma tendria que usarse en funciones separadas y eso
   // no es posible, useEffect solo se puede usar en el componente principal, despues analizamos posibles soluciones
@@ -28,12 +38,12 @@ const LoopButton = ({ soundData, onSoundChange }) => {
     if (currentCount === 1 && shouldListen && isPlayingOnSync === false && cuedForPlayback === true) {
       sound.playAsync();
       setIsPlayingOnSync(true);
-      setShouldListen(false);     
+      setShouldListen(false);
       registerPlaybackEvent('play');
     } else if ((currentCount === 1 || currentCount === 0) && shouldListen && isPlayingOnSync === true) {
       sound.stopAsync();
       setIsPlayingOnSync(false);
-      setShouldListen(false);      
+      setShouldListen(false);
       registerPlaybackEvent('stop');
     }
   }, [currentCount, shouldListen]);
@@ -56,9 +66,9 @@ const LoopButton = ({ soundData, onSoundChange }) => {
     const handleSoundLoad = async () => {
       try {
         await loadSound(soundData.file);
-/*         if (soundData.fromMic) {
-          startPlayback(); // Play automático de MicRecButton
-        } */
+        /*         if (soundData.fromMic) {
+                  startPlayback(); // Play automático de MicRecButton
+                } */
       } catch (error) {
         console.error('Error cargando sonido:', error);
       }
