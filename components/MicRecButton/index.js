@@ -4,8 +4,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useAuth } from "../../contexts/AuthContext";
 import { UseSelectedContext } from '../../contexts/SelectedContext';
 import { useSoundsContext } from '../../contexts/SoundsContext';
-import { saveSound } from "../../services/sounds";
-import { supabase } from "../../services/supabase";
+import { procesarYGuardarSonido } from '../../services/soundUploader';
 
 const MicRecButton = ({ handleNewRecordedSound }) => {
   const [recording, setRecording] = useState(null);
@@ -69,38 +68,12 @@ const MicRecButton = ({ handleNewRecordedSound }) => {
 
       const title = `Rec Mic ${getFormattedDateTime()}`;
       const type = 'MICREC';
+      const file = { uri, name: 'micrec.mp3' };
 
-      // Convertir a blob
-      const response = await fetch(uri);
-      const blob = await response.blob();
-
-      // Nombre de archivo único
-      const fileName = `${Date.now()}_micrec.mp3`;
-
-      // Subir a Supabase Storage
-      const { error: uploadError } = await supabase.storage
-        .from('chorimixer')
-        .upload(fileName, blob, {
-          contentType: 'audio/mpeg',
-          upsert: false,
-        });
-
-      if (uploadError) throw uploadError;
-
-      // Obtener URL pública
-      const { data: publicUrlData, error: urlError } = supabase.storage
-        .from('chorimixer')
-        .getPublicUrl(fileName);
-
-      if (urlError) throw urlError;
-
-      const publicUrl = publicUrlData.publicUrl;
-
-      // Guardar en DB
-      const sonidoGuardado = await saveSound({
+      const sonidoGuardado = await procesarYGuardarSonido({
         title,
         type,
-        url: publicUrl,
+        file,
         user: auth.user,
       });
 
@@ -109,14 +82,14 @@ const MicRecButton = ({ handleNewRecordedSound }) => {
         name: sonidoGuardado.title,
         file: { uri: sonidoGuardado.url },
         type: sonidoGuardado.type,
-        fromMic: true
+        fromMic: true,
       };
 
       addSound(newSound);
       if (handleNewRecordedSound) handleNewRecordedSound(newSound);
       if (toggleRefresh) toggleRefresh();
 
-      console.log('Grabación subida y guardada con éxito:', publicUrl);
+      console.log('Grabación subida y guardada con éxito:', sonidoGuardado.url);
     } catch (error) {
       console.error('Error grabando o subiendo audio:', error);
       alert('Error. No se pudo guardar la grabación');
@@ -140,7 +113,7 @@ const MicRecButton = ({ handleNewRecordedSound }) => {
   const checkMicAvailable = async () => {
     try {
       if (typeof navigator !== 'undefined' && navigator.mediaDevices?.enumerateDevices) {
-        await navigator.mediaDevices.getUserMedia({ audio: true }); 
+        await navigator.mediaDevices.getUserMedia({ audio: true });
         const devices = await navigator.mediaDevices.enumerateDevices();
         const micAvailable = devices.some(device => device.kind === 'audioinput');
         setIsMicAvailable(micAvailable);

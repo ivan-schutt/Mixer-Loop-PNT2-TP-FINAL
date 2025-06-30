@@ -11,8 +11,7 @@ import {
   View,
 } from "react-native";
 import { useAuth } from "../../contexts/AuthContext";
-import { saveSound } from "../../services/sounds";
-import { supabase } from "../../services/supabase";
+import { procesarYGuardarSonido } from "../../services/soundUploader";
 
 export default function ButtonUpload({ onUploadSuccess }) {
   const [modalVisible, setModalVisible] = useState(false);
@@ -37,43 +36,26 @@ export default function ButtonUpload({ onUploadSuccess }) {
     }
 
     try {
-      const fileName = `${Date.now()}_${file.name}`;
+      const sonidoGuardado = await procesarYGuardarSonido({
+        title,
+        type,
+        file,
+        user: auth.user,
+      });
 
-      const response = await fetch(file.uri);
-      const blob = await response.blob();
-
-      const { data, error } = await supabase.storage
-        .from("chorimixer")
-        .upload(fileName, blob, {
-          contentType: "audio/mpeg",
-          upsert: false,
-        });
-
-      if (error) throw error;
-
-      // Obtener la URL pública
-      const { data: publicUrlData } = supabase.storage
-        .from("chorimixer")
-        .getPublicUrl(fileName);
-
-      const publicUrl = publicUrlData.publicUrl;
-
-      await saveSound({ title, type, url: publicUrl, user: auth.user });
-      console.log("Archivo subido. URL pública:", publicUrl);
+      console.log("Archivo subido. URL pública:", sonidoGuardado.url);
 
       alert("¡Audio subido con éxito!");
-      //si onUploadSuccess es truthy, se llama a la funcion onUploadSuccess.
-      if (onUploadSuccess) onUploadSuccess(); 
+      if (onUploadSuccess) onUploadSuccess();
 
-      resetHooks()
-      
+      resetHooks();
     } catch (error) {
-      console.error("Error al subir el archivo:", error);
+      console.error("Error al subir el archivo desde el UploadButton:", error);
       alert("Hubo un error al subir el archivo.");
     }
-  }
+  };
 
-    const resetHooks = _ => {
+  const resetHooks = _ => {
     setModalVisible(false);
     setTitle("");
     setFile(null);
