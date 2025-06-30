@@ -4,14 +4,24 @@ import MicRecButton from "@/components/MicRecButton";
 import SessionRecButton from "@/components/SessionRecButton";
 import { useSoundContext } from "@/contexts/SoundContext";
 import { useEffect, useState } from "react";
-import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  FlatList,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from "react-native";
 import SoundLibraryScreen from "../SoundLibraryScreen";
 
 export default function MixerScreen() {
+  const PADS_TOTAL = 4;
+  //const COLS = 4;
   const [soundLibraryVisible, setSoundLibraryVisible] = useState(false);
   const [selectedButtonIndex, setSelectedButtonIndex] = useState(null);
-  const [buttonSounds, setButtonSounds] = useState([null, null, null, null]);
   const { selectedSounds } = useSoundContext();
+  const [buttonSounds, setButtonSounds] = useState(Array(PADS_TOTAL).fill(null));
 
   useEffect(() => {
     console.log('MixerScreen - Sonidos disponibles en contexto:', selectedSounds.length);
@@ -50,14 +60,26 @@ export default function MixerScreen() {
   };
 
   // Encuentra el primer índice disponible en buttonSounds (micRecButton)
-  const getFirstAvailableIndex = () => {
-    for (let i = 0; i < buttonSounds.length; i++) {
-      if (!buttonSounds[i]) {
-        return i;
-      }
-    }
-    return -1; // Si no hay espacios libres
-  };
+  const getFirstAvailableIndex = () => buttonSounds.findIndex((s) => !s);
+
+  const renderPad = ({ item: soundData, index }) => (
+    <View style={styles.buttonContainer}>
+      <LoopButton
+        soundData={soundData}
+        onSoundChange={() => handleSoundChange(index)}
+      />
+      <TouchableOpacity
+        style={[
+          styles.clearButton,
+          !soundData && styles.disabledClearButton,
+        ]}
+        onPress={() => clearButton(index)}
+        disabled={!soundData}
+      >
+        <Text style={styles.clearButtonText}>Limpiar</Text>
+      </TouchableOpacity>
+    </View>
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -69,81 +91,34 @@ export default function MixerScreen() {
             {selectedSounds.length} sonidos disponibles
           </Text>
         </View>
+
         <Counter />
+
         <View style={styles.sessionRecContainer}>
           <SessionRecButton />
         </View>
+
         <View>
           <MicRecButton handleNewRecordedSound={(sound) => {
             setButtonSounds((prev) => {
               const updated = [...prev];
               const index = getFirstAvailableIndex();
-              updated[index] = sound;
+              if (index !== -1) updated[index] = sound;
               return updated;
             });
           }} />
         </View>
-        <View style={styles.mixerGrid}>
-          <View style={styles.row}>
-            <View style={styles.buttonContainer}>
-              <LoopButton
-                soundData={buttonSounds[0]}
-                onSoundChange={() => handleSoundChange(0)}
-              />
-              <TouchableOpacity
-                style={[styles.clearButton, !buttonSounds[0] && styles.disabledClearButton]}
-                onPress={() => clearButton(0)}
-                disabled={!buttonSounds[0]}
-              >
-                <Text style={styles.clearButtonText}>Limpiar</Text>
-              </TouchableOpacity>
-            </View>
 
-            <View style={styles.buttonContainer}>
-              <LoopButton
-                soundData={buttonSounds[1]}
-                onSoundChange={() => handleSoundChange(1)}
-              />
-              <TouchableOpacity
-                style={[styles.clearButton, !buttonSounds[1] && styles.disabledClearButton]}
-                onPress={() => clearButton(1)}
-                disabled={!buttonSounds[1]}
-              >
-                <Text style={styles.clearButtonText}>Limpiar</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={styles.row}>
-            <View style={styles.buttonContainer}>
-              <LoopButton
-                soundData={buttonSounds[2]}
-                onSoundChange={() => handleSoundChange(2)}
-              />
-              <TouchableOpacity
-                style={[styles.clearButton, !buttonSounds[2] && styles.disabledClearButton]}
-                onPress={() => clearButton(2)}
-                disabled={!buttonSounds[2]}
-              >
-                <Text style={styles.clearButtonText}>Limpiar</Text>
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.buttonContainer}>
-              <LoopButton
-                soundData={buttonSounds[3]}
-                onSoundChange={() => handleSoundChange(3)}
-              />
-              <TouchableOpacity
-                style={[styles.clearButton, !buttonSounds[3] && styles.disabledClearButton]}
-                onPress={() => clearButton(3)}
-                disabled={!buttonSounds[3]}
-              >
-                <Text style={styles.clearButtonText}>Limpiar</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
+        <FlatList
+          data={buttonSounds}
+          renderItem={renderPad}
+          keyExtractor={(_, i) => i.toString()}
+          //numColumns={COLS}
+          horizontal={true}
+          scrollEnabled={true}
+          contentContainerStyle={[styles.mixerGrid, { marginTop: -100 }]}
+          ItemSeparatorComponent={() => <View style={{ width: -100 }} />}
+        />
       </ScrollView>
 
       <SoundLibraryScreen
@@ -164,12 +139,18 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f8f9fa',
   },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginBottom: 1,
+  },
   scrollContainer: {
     flex: 1,
   },
   scrollContent: {
     flexGrow: 1,
-    paddingBottom: 50, // Espacio extra para scroll
+    paddingBottom: 50,
   },
   header: {
     padding: 20,
@@ -200,16 +181,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    minHeight: 400, // Altura mínima para que se vea bien
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
-    marginVertical: 20,
+    minHeight: 400,
   },
   buttonContainer: {
     alignItems: 'center',
+    marginHorizontal: 15, // 👈 espacio entre cada botón horizontalmente
   },
   clearButton: {
     marginTop: 10,

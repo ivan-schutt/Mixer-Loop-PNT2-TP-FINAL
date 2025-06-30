@@ -56,10 +56,9 @@ const LoopButton = ({ soundData, onSoundChange }) => {
     const handleSoundLoad = async () => {
       try {
         await loadSound(soundData.file);
-
-        if (soundData.fromMic) {
+/*         if (soundData.fromMic) {
           startPlayback(); // Play automático de MicRecButton
-        }
+        } */
       } catch (error) {
         console.error('Error cargando sonido:', error);
       }
@@ -102,7 +101,7 @@ const LoopButton = ({ soundData, onSoundChange }) => {
 
       const { sound: audioSound } = await Audio.Sound.createAsync(audioFile, {
         shouldPlay: false,
-        isLooping: true,
+        isLooping: false, // LOOP
         volume: 1.0,
         rate: 1.0, // Velocidad normal
         shouldCorrectPitch: true, // Mantiene pitch correcto
