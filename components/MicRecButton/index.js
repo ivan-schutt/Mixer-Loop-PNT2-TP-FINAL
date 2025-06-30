@@ -2,18 +2,18 @@ import { Audio } from 'expo-av';
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useAuth } from "../../contexts/AuthContext";
-import { useAvailableContext } from '../../contexts/AvailableSoundsContext';
-import { useSoundContext } from '../../contexts/SoundContext';
+import { UseSelectedContext } from '../../contexts/SelectedContext';
+import { useSoundsContext } from '../../contexts/SoundsContext';
 import { saveSound } from "../../services/sounds";
 import { supabase } from "../../services/supabase";
 
 const MicRecButton = ({ handleNewRecordedSound }) => {
   const [recording, setRecording] = useState(null);
-  const { addSound } = useSoundContext();
+  const { addSound } = UseSelectedContext();
   const [isMicAvailable, setIsMicAvailable] = useState(false);
   const [hasPermission, setHasPermission] = useState(false);
   const { auth } = useAuth();
-  const { toggleRefresh } = useAvailableContext();
+  const { toggleRefresh } = useSoundsContext();
 
   useEffect(() => {
     checkPermission()

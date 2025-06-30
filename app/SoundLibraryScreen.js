@@ -1,6 +1,6 @@
-import { useSoundContext } from '@/contexts/SoundContext';
+import { UseSelectedContext } from '@/contexts/SelectedContext';
 import { Audio } from 'expo-av';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Alert,
   FlatList,
@@ -16,7 +16,7 @@ const SoundLibraryScreen = ({ visible, onClose, onSoundSelect }) => {
   const [isPlayingPreview, setIsPlayingPreview] = useState(null);
   
   
-  const { selectedSounds } = useSoundContext();
+  const { selectedSounds } = UseSelectedContext();
   
   console.log('=== SoundLibraryScreen RENDER ===');
   console.log('Sonidos en contexto:', selectedSounds?.length || 0);

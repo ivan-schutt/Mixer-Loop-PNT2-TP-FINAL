@@ -2,9 +2,9 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { getSounds } from "../services/sounds";
 import { useAuth } from "./AuthContext";
 
-const AvailableSoundsContext = createContext();
+const SoundsContext = createContext();
 
-export function AvailableSoundsProvider({ children }) {
+export function SoundsProvider({ children }) {
   const [refresh, setRefresh] = useState(null);
   const { auth } = useAuth();
   const [availableSounds, setAvailableSounds] = useState([]);
@@ -27,14 +27,14 @@ export function AvailableSoundsProvider({ children }) {
 
   const toggleRefresh = () => setRefresh(prev => !prev);
 
-  return <AvailableSoundsContext.Provider value={{ availableSounds, toggleRefresh }}>{children}</AvailableSoundsContext.Provider>;
+  return <SoundsContext.Provider value={{ availableSounds, toggleRefresh }}>{children}</SoundsContext.Provider>;
 }
 
-export function useAvailableContext() {
-  const context = useContext(AvailableSoundsContext);
+export function useSoundsContext() {
+  const context = useContext(SoundsContext);
 
   if (!context) {
-    throw new Error('useAvailable debe ser usado dentro de un AvailableSoundsProvider');
+    throw new Error('useAvailable debe ser usado dentro de un SoundsProvider');
   }
 
   return context;

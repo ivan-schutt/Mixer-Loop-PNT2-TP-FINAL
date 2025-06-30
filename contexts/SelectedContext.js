@@ -1,27 +1,23 @@
 import { createContext, useContext, useState } from 'react';
 
-const SoundContext = createContext();
+const SelectedContext = createContext();
 
-// SelectedProvider
-// SelectedContext
-// UseSelectedContext
-
-export const useSoundContext = () => {
-  const context = useContext(SoundContext);
+export const UseSelectedContext = () => {
+  const context = useContext(SelectedContext);
   if (!context) {
-    throw new Error('useSoundContext debe usarse dentro de SoundProvider');
+    throw new Error('UseSelectedContext debe usarse dentro de SelectedProvider');
   }
   
   // Log cada vez que se accede al contexto
-  console.log('=== useSoundContext llamado ===');
+  console.log('=== UseSelectedContext llamado ===');
   console.log('selectedSounds count:', context.selectedSounds?.length || 0);
   console.log('selectedSounds:', context.selectedSounds?.map(s => s.name) || []);
-  console.log('=== fin useSoundContext ===');
+  console.log('=== fin UseSelectedContext ===');
   
   return context;
 };
 
-export const SoundProvider = ({ children }) => {
+export const SelectedProvider = ({ children }) => {
   const [selectedSounds, setSelectedSounds] = useState([]);
 
   const addSound = (sound) => {
@@ -74,13 +70,13 @@ export const SoundProvider = ({ children }) => {
     return isSelected;
   };
 
-  console.log('=== SoundProvider RENDER ===');
+  console.log('=== SelectedProvider RENDER ===');
   console.log('selectedSounds count:', selectedSounds.length);
   console.log('selectedSounds:', selectedSounds.map(s => `${s.id}:${s.name}`));
-  console.log('=== FIN SoundProvider RENDER ===');
+  console.log('=== FIN SelectedProvider RENDER ===');
 
   return (
-    <SoundContext.Provider value={{
+    <SelectedContext.Provider value={{
       selectedSounds,
       addSound,
       removeSound,
@@ -88,6 +84,6 @@ export const SoundProvider = ({ children }) => {
       isSoundSelected
     }}>
       {children}
-    </SoundContext.Provider>
+    </SelectedContext.Provider>
   );
 }; 

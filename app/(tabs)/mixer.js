@@ -2,7 +2,7 @@ import Counter from "@/components/counter";
 import LoopButton from "@/components/loopButton";
 import MicRecButton from "@/components/MicRecButton";
 import SessionRecButton from "@/components/SessionRecButton";
-import { useSoundContext } from "@/contexts/SoundContext";
+import { UseSelectedContext } from "@/contexts/SelectedContext";
 import { useEffect, useState } from "react";
 import {
   FlatList,
@@ -20,7 +20,7 @@ export default function MixerScreen() {
   //const COLS = 4;
   const [soundLibraryVisible, setSoundLibraryVisible] = useState(false);
   const [selectedButtonIndex, setSelectedButtonIndex] = useState(null);
-  const { selectedSounds } = useSoundContext();
+  const { selectedSounds } = UseSelectedContext();
   const [buttonSounds, setButtonSounds] = useState(Array(PADS_TOTAL).fill(null));
 
   useEffect(() => {

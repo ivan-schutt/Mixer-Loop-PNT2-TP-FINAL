@@ -1,7 +1,7 @@
 import { AudioSyncProvider } from "@/contexts/AudioSyncContext";
-import { AvailableSoundsProvider } from "@/contexts/AvailableSoundsContext";
 import { EventLogProvider } from "@/contexts/EventLogContext";
-import { SoundProvider } from "@/contexts/SoundContext";
+import { SelectedProvider } from "@/contexts/SelectedContext";
+import { SoundsProvider } from "@/contexts/SoundsContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import {
   DarkTheme,
@@ -61,8 +61,8 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
-      <AvailableSoundsProvider>
-        <SoundProvider>
+      <SoundsProvider>
+        <SelectedProvider>
           <AudioSyncProvider>
             <EventLogProvider>
               <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
@@ -71,8 +71,8 @@ export default function RootLayout() {
               </ThemeProvider>
             </EventLogProvider>
           </AudioSyncProvider>
-        </SoundProvider>
-      </AvailableSoundsProvider>
+        </SelectedProvider>
+      </SoundsProvider>
     </AuthProvider>
   );
 }
