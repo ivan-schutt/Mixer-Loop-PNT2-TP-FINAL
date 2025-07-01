@@ -3,9 +3,10 @@ import { useAudioContext } from './AudioContext';
 
 const SoundContext = createContext();
 
-// useSoundContext
-// SoundContext
-// SoundProvider
+// Para modificar los nombres mañana:
+// useSelectedContext
+// SelectedContext
+// SelectedProvider
 
 export const useSoundContext = () => {
   const context = useContext(SoundContext);
@@ -34,17 +35,9 @@ export const SoundProvider = ({ children }) => {
     const existingIds = new Set(existingSounds.map(s => s.id));
 
     setSelectedSounds(prev =>
-      prev.filter(s => existingIds.has(s.id) || s.pending === true)
+      prev.filter(s => existingIds.has(s.id))
     );
   }, [existingSounds]);
-
-  const markSoundAsNotPending = (soundId) => {
-    setSelectedSounds(prev =>
-      prev.map(s =>
-        s.id === soundId ? { ...s, pending: false } : s
-      )
-    );
-  };
 
   // Agrega un sonido si no está ya seleccionado
   const addSound = (sound) => {
@@ -110,8 +103,7 @@ export const SoundProvider = ({ children }) => {
       addSound,
       removeSound,
       clearAllSounds,
-      isSoundSelected,
-      markSoundAsNotPending
+      isSoundSelected
     }}>
       {children}
     </SoundContext.Provider>

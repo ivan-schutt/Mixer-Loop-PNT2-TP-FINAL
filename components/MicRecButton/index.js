@@ -8,7 +8,7 @@ import { procesarYGuardarSonido } from '../../services/soundUploader';
 
 const MicRecButton = ({ handleNewRecordedSound }) => {
   const [recording, setRecording] = useState(null);
-  const { addSound, markSoundAsNotPending } = useSoundContext();
+  const { addSound } = useSoundContext();
   const [isMicAvailable, setIsMicAvailable] = useState(false);
   const [hasPermission, setHasPermission] = useState(false);
   const { auth } = useAuth();
@@ -77,24 +77,15 @@ const MicRecButton = ({ handleNewRecordedSound }) => {
         user: auth.user,
       });
 
-      console.log('Sonido guardado:', sonidoGuardado);
-
       const newSound = {
-        id: sonidoGuardado.id,
+        id: sonidoGuardado._id,
         name: sonidoGuardado.title,
         file: { uri: sonidoGuardado.url },
         type: sonidoGuardado.type,
-        fromMic: true,
-        pending: true
+        fromMic: true
       };
 
-      console.log('newSound.id:', newSound.id);
-
       addSound(newSound);
-      setTimeout(() => {
-        markSoundAsNotPending(newSound.id);
-      }, 10000);
-
       if (handleNewRecordedSound) handleNewRecordedSound(newSound);
       if (toggleRefresh) toggleRefresh();
 

@@ -4,9 +4,10 @@ import { useAuth } from "./AuthContext";
 
 const AudioContext = createContext();
 
-// useAudioContext
-// AudioContext
-// AudioProvider
+// Para modificar los nombres mañana:
+// useSoundContext
+// SoundContext
+// SoundProvider
 
 export function AudioProvider({ children }) {
   const [refresh, setRefresh] = useState(null);

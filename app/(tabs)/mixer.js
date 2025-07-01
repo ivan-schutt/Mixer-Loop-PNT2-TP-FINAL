@@ -58,6 +58,8 @@ export default function MixerScreen() {
     console.log('Botón limpiado:', buttonIndex);
   };
 
+  const getFirstAvailableIndex = () => buttonSounds.findIndex((s) => !s);
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContent}>
@@ -73,7 +75,14 @@ export default function MixerScreen() {
           <SessionRecButton />
         </View>
         <View>
-          <MicRecButton handleNewRecordedSound={() => {}} />
+          <MicRecButton handleNewRecordedSound={(sound) => {
+            setButtonSounds((prev) => {
+              const updated = [...prev];
+              const index = getFirstAvailableIndex();
+              updated[index] = sound;
+              return updated;
+            });
+          }} />
         </View>
         <View style={styles.mixerGrid}>
           <View style={styles.row}>
@@ -161,7 +170,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    paddingBottom: 50, 
+    paddingBottom: 50,
   },
   header: {
     padding: 20,
@@ -192,7 +201,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    minHeight: 400, 
+    minHeight: 400,
   },
   row: {
     flexDirection: 'row',
