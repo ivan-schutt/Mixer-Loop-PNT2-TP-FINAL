@@ -74,6 +74,7 @@ export default function MixerScreen() {
         <View style={styles.sessionRecContainer}>
           <SessionRecButton />
         </View>
+
         <View>
           <MicRecButton handleNewRecordedSound={(sound) => {
             setButtonSounds((prev) => {
@@ -84,13 +85,12 @@ export default function MixerScreen() {
             });
           }} />
         </View>
+        
         <View style={styles.mixerGrid}>
+          {/* Fila 1: Botones 0 y 1 */}
           <View style={styles.row}>
             <View style={styles.buttonContainer}>
-              <LoopButton
-                soundData={buttonSounds[0]}
-                onSoundChange={() => handleSoundChange(0)}
-              />
+              <LoopButton soundData={buttonSounds[0]} onSoundChange={() => handleSoundChange(0)} />
               <TouchableOpacity
                 style={[styles.clearButton, !buttonSounds[0] && styles.disabledClearButton]}
                 onPress={() => clearButton(0)}
@@ -101,10 +101,7 @@ export default function MixerScreen() {
             </View>
 
             <View style={styles.buttonContainer}>
-              <LoopButton
-                soundData={buttonSounds[1]}
-                onSoundChange={() => handleSoundChange(1)}
-              />
+              <LoopButton soundData={buttonSounds[1]} onSoundChange={() => handleSoundChange(1)} />
               <TouchableOpacity
                 style={[styles.clearButton, !buttonSounds[1] && styles.disabledClearButton]}
                 onPress={() => clearButton(1)}
@@ -115,12 +112,24 @@ export default function MixerScreen() {
             </View>
           </View>
 
+          {/* Botón 4 centrado */}
+          <View style={styles.centerButtonRow}>
+            <View style={styles.buttonContainer}>
+              <LoopButton soundData={buttonSounds[4]} onSoundChange={() => handleSoundChange(4)} />
+              <TouchableOpacity
+                style={[styles.clearButton, !buttonSounds[4] && styles.disabledClearButton]}
+                onPress={() => clearButton(4)}
+                disabled={!buttonSounds[4]}
+              >
+                <Text style={styles.clearButtonText}>Limpiar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Fila 2: Botones 2 y 3 */}
           <View style={styles.row}>
             <View style={styles.buttonContainer}>
-              <LoopButton
-                soundData={buttonSounds[2]}
-                onSoundChange={() => handleSoundChange(2)}
-              />
+              <LoopButton soundData={buttonSounds[2]} onSoundChange={() => handleSoundChange(2)} />
               <TouchableOpacity
                 style={[styles.clearButton, !buttonSounds[2] && styles.disabledClearButton]}
                 onPress={() => clearButton(2)}
@@ -131,10 +140,7 @@ export default function MixerScreen() {
             </View>
 
             <View style={styles.buttonContainer}>
-              <LoopButton
-                soundData={buttonSounds[3]}
-                onSoundChange={() => handleSoundChange(3)}
-              />
+              <LoopButton soundData={buttonSounds[3]} onSoundChange={() => handleSoundChange(3)} />
               <TouchableOpacity
                 style={[styles.clearButton, !buttonSounds[3] && styles.disabledClearButton]}
                 onPress={() => clearButton(3)}
@@ -161,6 +167,17 @@ export default function MixerScreen() {
 }
 
 const styles = StyleSheet.create({
+  centerButtonRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginVertical: 10,
+  },
+  centeredLoopButton: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 40,
+  },
   container: {
     flex: 1,
     backgroundColor: '#f8f9fa',
@@ -202,6 +219,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
     minHeight: 400,
+    gap: 10 
   },
   row: {
     flexDirection: 'row',

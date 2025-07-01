@@ -12,8 +12,7 @@ import EditSoundButton from '../editSoundButton/index.js';
 const SoundItem = ({
   sound,
   isSelected,
-  onToggleSelection,
-  onUploadSuccess
+  onToggleSelection
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -101,10 +100,6 @@ const SoundItem = ({
         {isOwner && (
           <EditSoundButton
             soundData={sound}
-            onUploadSuccess={() => {
-              console.log("Audio editado");
-              if (onUploadSuccess) onUploadSuccess()
-            }}
           />
         )}
 

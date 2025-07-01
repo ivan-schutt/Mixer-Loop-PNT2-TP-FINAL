@@ -40,13 +40,13 @@ const MicRecButton = ({ handleNewRecordedSound }) => {
     try {
       const permission = await checkPermission();
       if (!permission) {
-        alert('Permiso denegado. Se necesita permiso para grabar audio');
+        alert('❌ Permiso denegado. Se necesita permiso para grabar audio');
         return;
       }
 
       const micAvailable = await checkMicAvailable();
       if (!micAvailable) {
-        alert('Sin micrófono. No se detectó ningún micrófono disponible.');
+        alert('❌ Sin micrófono. No se detectó ningún micrófono disponible.');
         return;
       }
 
@@ -100,7 +100,10 @@ const MicRecButton = ({ handleNewRecordedSound }) => {
 
   const checkPermission = async () => {
     try {
-      const permission = await Audio.getPermissionsAsync();
+      let permission = await Audio.getPermissionsAsync();
+      if (!permission.granted) {
+        permission = await Audio.requestPermissionsAsync();
+      }
       setHasPermission(permission.granted);
       return permission.granted;
     } catch (err) {

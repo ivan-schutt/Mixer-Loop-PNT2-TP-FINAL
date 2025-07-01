@@ -13,19 +13,16 @@ import {
   View
 } from 'react-native';
 import { useAudioContext } from '../../contexts/AudioContext';
-import { useAuth } from "../../contexts/AuthContext";
 
 export default function HomeScreen() {
   console.log('=== HomeScreen RENDER ===');
 
   // Obtener contexto
   const { selectedSounds, addSound, removeSound, isSoundSelected } = useSoundContext();
-  // Para obtener el nombre del usuiario que subió el audio
-  const { auth } = useAuth();
   // Para filtrar sonidos por tipo
   const [selectedFilter, setSelectedFilter] = useState('TODOS');
   // Para refrescar y obtener sonidos del backend
-  const { availableSounds , toggleRefresh } = useAudioContext();
+  const { availableSounds } = useAudioContext();
 
   // Generar tipos de sonidos disponibles dinámicamente
   const soundTypes = (() => {
@@ -116,7 +113,7 @@ export default function HomeScreen() {
           </View>
         )}
 
-        <ButtonUpload onUploadSuccess={toggleRefresh} />
+        <ButtonUpload/>
 
         {/* Filtro de sonidos */}
         <View style={styles.filterSection}>
@@ -159,7 +156,6 @@ export default function HomeScreen() {
                 //por eso aca se le pasa la funcion handleToggleSound, que es la que se encarga de agregar o quitar el sonido, a
                 //sound item. De esta forma, se evita que el componente SoundItem se vuelva a renderizar, y se evita que se vuelva a llamar a la funcion handleToggleSound.
                 onToggleSelection={handleToggleSound}
-                onUploadSuccess={toggleRefresh}
               />
             ))
           )}

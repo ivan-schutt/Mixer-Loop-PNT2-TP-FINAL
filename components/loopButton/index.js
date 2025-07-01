@@ -21,16 +21,6 @@ const LoopButton = ({ soundData, onSoundChange }) => {
   //que el componente no este usando useEffect todo el tiempo, sino solo cuando se necesite.
   const [shouldListen, setShouldListen] = useState(false);
 
-/*   useEffect(() => {
-    if (!soundData) {
-      setSound(null);
-      setIsPlaying(false);
-      setCuedForPlayback(false);
-      setShouldListen(false);
-      setIsPlayingOnSync(false);
-    }
-  }, [soundData]); */
-
   //en principio que queria aplicar use effect con condicional del esitlo, shouldListen ? [currentCount] : []); 
   //para que solo se ejecute cuando se ncesite, pero use effect de esa forma tendria que usarse en funciones separadas y eso
   // no es posible, useEffect solo se puede usar en el componente principal, despues analizamos posibles soluciones

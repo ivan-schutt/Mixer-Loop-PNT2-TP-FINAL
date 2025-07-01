@@ -6,7 +6,6 @@ import { StyleSheet, Text, TextInput } from 'react-native';
 import { useAuth } from '../../contexts/AuthContext';
 import authService from '../../services/authService';
 
-
 export default function LoginScreen() {
   const router = useRouter();
   const { setAuth } = useAuth(); 

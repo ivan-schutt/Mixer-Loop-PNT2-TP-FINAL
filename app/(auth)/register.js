@@ -3,10 +3,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TextInput } from 'react-native';
-import authService from '../../services/authService';
 import { useAuth } from '../../contexts/AuthContext';
-
-
+import authService from '../../services/authService';
 
 export default function RegisterScreen({ navigation }) {
   const [nombre, setNombre] = useState('');
@@ -14,7 +12,6 @@ export default function RegisterScreen({ navigation }) {
   const [password, setPassword] = useState('');
   const [confirmarPassword, setConfirmarPassword] = useState('');
   const { setAuth } = useAuth(); 
-
 
     const handleRegister = async () => {
       if (password !== confirmarPassword) {
@@ -28,7 +25,6 @@ export default function RegisterScreen({ navigation }) {
       } catch (error) {
     alert(error.message || 'Error al registrar usuario');
   }};
-
 
   return (
     <LinearGradient

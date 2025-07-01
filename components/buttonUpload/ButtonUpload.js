@@ -10,10 +10,12 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useAudioContext } from "../../contexts/AudioContext";
 import { useAuth } from "../../contexts/AuthContext";
 import { procesarYGuardarSonido } from "../../services/soundUploader";
 
-export default function ButtonUpload({ onUploadSuccess }) {
+export default function ButtonUpload({ }) {
+  const { toggleRefresh } = useAudioContext();
   const [modalVisible, setModalVisible] = useState(false);
   const [title, setTitle] = useState("");
   const [file, setFile] = useState(null);
@@ -46,7 +48,7 @@ export default function ButtonUpload({ onUploadSuccess }) {
       console.log("Archivo subido. URL pública:", sonidoGuardado.url);
 
       alert("¡Audio subido con éxito!");
-      if (onUploadSuccess) onUploadSuccess();
+      if (toggleRefresh) toggleRefresh();
 
       resetHooks();
     } catch (error) {

@@ -9,18 +9,20 @@ import {
   TouchableOpacity,
   View
 } from "react-native";
+import { useAudioContext } from '../../contexts/AudioContext';
 import { deleteSound, updateSound } from "../../services/sounds";
 
-const EditSoundButton = ({ soundData, onUploadSuccess }) => {
+const EditSoundButton = ({ soundData }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [title, setTitle] = useState("");
   const [type, setType] = useState("");
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const { toggleRefresh } = useAudioContext();
 
   useEffect(() => {
     if (soundData) {
-      setTitle(soundData.name || ""); 
-      setType(soundData.category || ""); 
+      setTitle(soundData.name || "");
+      setType(soundData.category || "");
     }
   }, [soundData]);
 
@@ -34,8 +36,7 @@ const EditSoundButton = ({ soundData, onUploadSuccess }) => {
       await updateSound({ id: soundData.id, title, type });
       alert("¡Audio editado con éxito!");
 
-      if (onUploadSuccess) onUploadSuccess();
-
+      if (toggleRefresh) toggleRefresh();
       setModalVisible(false);
 
     } catch (error) {
@@ -49,8 +50,7 @@ const EditSoundButton = ({ soundData, onUploadSuccess }) => {
       await deleteSound(soundData.id);
       alert("Audio eliminado con éxito");
 
-      if (onUploadSuccess) onUploadSuccess();
-
+      if (toggleRefresh) toggleRefresh();
       setShowConfirmDelete(false);
       setModalVisible(false);
     } catch (error) {
