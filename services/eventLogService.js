@@ -37,7 +37,42 @@ const renderSessionEvents = (events) => {
   return sendSessionLog(sessionData);
 };
 
+const downloadRenderedAudio = (downloadUrl, filename) => {
+  return new Promise((resolve, reject) => {
+    try {
+      // Validar que existe URL de descarga
+      if (!downloadUrl) {
+        throw new Error('No hay URL de descarga disponible');
+      }
+
+      console.log('Iniciando descarga:', downloadUrl);
+
+      // Crear elemento de descarga temporal
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = filename;
+      
+      // Agregar al DOM temporalmente
+      document.body.appendChild(link);
+      
+      // Simular clic para iniciar descarga
+      link.click();
+      
+      // Limpiar elemento temporal
+      document.body.removeChild(link);
+      
+      console.log('✅ Descarga iniciada exitosamente:', filename);
+      resolve(true);
+      
+    } catch (error) {
+      console.error('❌ Error en descarga:', error);
+      reject(error);
+    }
+  });
+};
+
 export {
   sendSessionLog,
-  renderSessionEvents
+  renderSessionEvents,
+  downloadRenderedAudio
 }; 
