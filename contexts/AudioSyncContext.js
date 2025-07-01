@@ -23,6 +23,9 @@ export const AudioSyncProvider = ({ children }) => {
 
   const [currentCount, setCurrentCount] = useState(0);
 
+  // Señal para que todos los LoopButtons paren (timestamp para forzar re-render)
+  const [stopAllSignal, setStopAllSignal] = useState(null);
+
   //beats va a manejar los beats totales, algo que usaremos con useRef. Esto va a funcioanr en el background, y nos va a servir para
   //crear el log de audios cuando querramos renderizar.
 
@@ -88,6 +91,13 @@ export const AudioSyncProvider = ({ children }) => {
     currentBar.current = 1;
   };
 
+  
+  const stopAllTracks = () => {    
+    setStopAllSignal(Date.now()); // Timestamp único para forzar re-render
+    activeTracks.current = 0;
+    stopSync();
+  };
+
   const addActiveTrack = () => {
     //cuando se reproduce un track, simplemente incrementa el contador
     activeTracks.current++;
@@ -116,9 +126,11 @@ export const AudioSyncProvider = ({ children }) => {
         beats,
         currentBar,
         activeTracks,
+        stopAllSignal,
         addActiveTrack,
         removeActiveTrack,
-        resetBeats
+        resetBeats,
+        stopAllTracks
       }}
     >
       {children}

@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity } from "react-native";
 
 const LoopButton = ({ soundData, onSoundChange }) => {
-  const { addActiveTrack, removeActiveTrack, currentCount, beats } = useAudioSyncContext();
+  const { addActiveTrack, removeActiveTrack, currentCount, beats, stopAllSignal } = useAudioSyncContext();
   const { addEvent } = useEventLogContext();
   const [sound, setSound] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -47,6 +47,19 @@ const LoopButton = ({ soundData, onSoundChange }) => {
       registerPlaybackEvent('stop');
     }
   }, [currentCount, shouldListen]);
+
+  // Escuchar señal para parar todos los tracks
+  useEffect(() => {
+    //validar que el stopAllSignal sea distinto de null por las dudas
+    if (stopAllSignal) {      
+      if (sound && isPlayingOnSync) {
+        sound.stopAsync();
+      }
+      setIsPlayingOnSync(false);
+      setCuedForPlayback(false);
+      setShouldListen(false);
+    }
+  }, [stopAllSignal]);
 
   // Cargar el audio cuando cambie soundData. Si no hay soundData, limpiar el sonido actual.
   // Si el sonido es borrado de este componente, se detiene la reproducción y deja el espacio para seleccionar otro sonido.

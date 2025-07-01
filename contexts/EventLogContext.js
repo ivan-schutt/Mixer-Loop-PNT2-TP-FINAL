@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from "react";
-import { renderSessionEvents } from "@/services/eventLogService";
+import { renderSessionEvents, downloadRenderedAudio } from "@/services/eventLogService";
 import { useAudioSyncContext } from "./AudioSyncContext";
 
 const EventLogContext = createContext();
@@ -15,7 +15,7 @@ export const useEventLogContext = () => {
 };
 
 export const EventLogProvider = ({ children }) => {
-  const { resetBeats } = useAudioSyncContext();
+  const { resetBeats, activeTracks, stopAllTracks } = useAudioSyncContext();
   const [events, setEvents] = useState([]);
   const [isRecording, setIsRecording] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState(null);
@@ -38,6 +38,12 @@ export const EventLogProvider = ({ children }) => {
   };
 
   const startRecording = () => {
+    // Validar que no haya tracks activos antes de empezar a grabar
+    if (activeTracks.current > 0) {      
+      alert('❌ Para iniciar grabación, todos los sonidos deben estar pausados');
+      return false;
+    }
+
     // Resetear beats al iniciar nueva grabación
     resetBeats();
     setEvents([]); // Limpiar eventos anteriores
@@ -45,9 +51,15 @@ export const EventLogProvider = ({ children }) => {
     setLastRenderResult(null); // Limpiar resultado anterior
     setIsRecording(true);
     console.log('🔴 Grabación de sesión iniciada - Beats reseteados');
+    return true;
   };
 
   const stopRecording = async () => {
+    // Primero parar todos los sonidos que estén reproduciéndose
+    if (activeTracks.current > 0) {      
+      stopAllTracks();
+    }
+
     setIsRecording(false);
     console.log('⏹️ Grabación de sesión detenida');
     console.log('📊 LOG DE SESIÓN COMPLETO:', events);
@@ -82,17 +94,14 @@ export const EventLogProvider = ({ children }) => {
     console.log('🔄 Beats reseteados al terminar grabación');
   };
 
-  // Función para descargar el archivo
-  const downloadAudio = () => {
-    if (downloadUrl) {
-      // Crear elemento de descarga temporal
-      const link = document.createElement('a');
-      link.href = downloadUrl;
-      link.download = lastRenderResult?.filename || 'mix.mp3';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      console.log('📥 Descarga iniciada:', downloadUrl);
+  // Función para descargar el archivo usando el service
+  const downloadAudio = async () => {
+    try {
+      const filename = lastRenderResult?.filename || 'mix.mp3';
+      await downloadRenderedAudio(downloadUrl, filename);
+    } catch (error) {
+      console.error('❌ Error al descargar archivo:', error);
+      // Opcionalmente podrías mostrar un Alert aquí
     }
   };
 
@@ -100,7 +109,11 @@ export const EventLogProvider = ({ children }) => {
     if (isRecording) {
       stopRecording();
     } else {
-      startRecording();
+      // startRecording ahora retorna true/false según si pudo empezar
+      const started = startRecording();
+      if (!started) {
+        console.log('No se pudo iniciar grabación');
+      }
     }
   };
 
