@@ -1,6 +1,6 @@
 import ButtonUpload from '@/components/buttonUpload/ButtonUpload';
 import SoundItem from '@/components/soundItem';
-import { useSelectedContext } from '@/contexts/SelectedContext';
+import { useSoundContext } from '@/contexts/SoundContext';
 import { Picker } from "@react-native-picker/picker";
 import { useState } from 'react';
 import {
@@ -12,20 +12,20 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import { useAudioContext } from '../../contexts/AudioContext';
 import { useAuth } from "../../contexts/AuthContext";
-import { useSoundContext } from '../../contexts/SoundContext';
 
 export default function HomeScreen() {
   console.log('=== HomeScreen RENDER ===');
 
   // Obtener contexto
-  const { selectedSounds, addSound, removeSound, isSoundSelected } = useSelectedContext();
+  const { selectedSounds, addSound, removeSound, isSoundSelected } = useSoundContext();
   // Para obtener el nombre del usuiario que subió el audio
   const { auth } = useAuth();
   // Para filtrar sonidos por tipo
   const [selectedFilter, setSelectedFilter] = useState('TODOS');
   // Para refrescar y obtener sonidos del backend
-  const { availableSounds , toggleRefresh } = useSoundContext();
+  const { availableSounds , toggleRefresh } = useAudioContext();
 
   // Generar tipos de sonidos disponibles dinámicamente
   const soundTypes = (() => {

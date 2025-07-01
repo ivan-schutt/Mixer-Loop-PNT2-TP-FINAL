@@ -1,18 +1,18 @@
 import { Audio } from 'expo-av';
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useAudioContext } from '../../contexts/AudioContext';
 import { useAuth } from "../../contexts/AuthContext";
-import { useSelectedContext } from '../../contexts/SelectedContext';
 import { useSoundContext } from '../../contexts/SoundContext';
 import { procesarYGuardarSonido } from '../../services/soundUploader';
 
 const MicRecButton = ({ handleNewRecordedSound }) => {
   const [recording, setRecording] = useState(null);
-  const { addSound, markSoundAsNotPending } = useSelectedContext();
+  const { addSound, markSoundAsNotPending } = useSoundContext();
   const [isMicAvailable, setIsMicAvailable] = useState(false);
   const [hasPermission, setHasPermission] = useState(false);
   const { auth } = useAuth();
-  const { toggleRefresh } = useSoundContext();
+  const { toggleRefresh } = useAudioContext();
 
   useEffect(() => {
     checkPermission()
@@ -77,6 +77,8 @@ const MicRecButton = ({ handleNewRecordedSound }) => {
         user: auth.user,
       });
 
+      console.log('Sonido guardado:', sonidoGuardado);
+
       const newSound = {
         id: sonidoGuardado.id,
         name: sonidoGuardado.title,
@@ -86,10 +88,12 @@ const MicRecButton = ({ handleNewRecordedSound }) => {
         pending: true
       };
 
+      console.log('newSound.id:', newSound.id);
+
       addSound(newSound);
-/*       setTimeout(() => {
+      setTimeout(() => {
         markSoundAsNotPending(newSound.id);
-      }, 10000); */
+      }, 10000);
 
       if (handleNewRecordedSound) handleNewRecordedSound(newSound);
       if (toggleRefresh) toggleRefresh();

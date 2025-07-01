@@ -1,11 +1,10 @@
 import { Audio } from 'expo-av';
 import { useRef, useState } from 'react';
 import {
-  Alert,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 import { useAuth } from "../../contexts/AuthContext.js";
 import EditSoundButton from '../editSoundButton/index.js';
@@ -66,7 +65,7 @@ const SoundItem = ({
       }
     } catch (error) {
       console.error('Error al reproducir sonido:', error);
-      Alert.alert('Error', 'No se pudo reproducir el sonido');
+      alert('Error', 'No se pudo reproducir el sonido');
       setIsPlaying(false);
       setIsLoading(false);
     }

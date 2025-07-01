@@ -1,22 +1,20 @@
-import { useSelectedContext } from '@/contexts/SelectedContext';
+import { useSoundContext } from '@/contexts/SoundContext';
 import { Audio } from 'expo-av';
 import { useEffect, useState } from 'react';
 import {
-    Alert,
-    FlatList,
-    Modal,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Alert,
+  FlatList,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 const SoundLibraryScreen = ({ visible, onClose, onSoundSelect }) => {
   const [previewSound, setPreviewSound] = useState(null);
   const [isPlayingPreview, setIsPlayingPreview] = useState(null);
-  
-  
-  const { selectedSounds } = useSelectedContext();
+  const { selectedSounds } = useSoundContext();
   
   console.log('=== SoundLibraryScreen RENDER ===');
   console.log('Sonidos en contexto:', selectedSounds?.length || 0);

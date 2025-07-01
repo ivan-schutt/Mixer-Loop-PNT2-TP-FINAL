@@ -31,7 +31,7 @@ export const procesarYGuardarSonido = async ({ title, type, file, user }) => {
     title,
     type,
     url: publicUrl,
-    user,
+    user
   });
 
   return sonidoGuardado;

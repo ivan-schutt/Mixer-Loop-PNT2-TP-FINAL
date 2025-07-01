@@ -2,7 +2,7 @@ import Counter from "@/components/counter";
 import LoopButton from "@/components/loopButton";
 import MicRecButton from "@/components/MicRecButton";
 import SessionRecButton from "@/components/SessionRecButton";
-import { useSelectedContext } from "@/contexts/SelectedContext";
+import { useSoundContext } from "@/contexts/SoundContext";
 import { useEffect, useState } from "react";
 import {
   FlatList,
@@ -20,12 +20,12 @@ export default function MixerScreen() {
   //const COLS = 4;
   const [soundLibraryVisible, setSoundLibraryVisible] = useState(false);
   const [selectedButtonIndex, setSelectedButtonIndex] = useState(null);
-  const { selectedSounds } = useSelectedContext();
+  const { selectedSounds } = useSoundContext();
   const [buttonSounds, setButtonSounds] = useState(Array(PADS_TOTAL).fill(null));
 
   useEffect(() => {
     console.log('MixerScreen - Sonidos disponibles en contexto:', selectedSounds.length);
-/*     setButtonSounds(prevButtonSounds => {
+    setButtonSounds(prevButtonSounds => {
       const selectedIds = new Set(selectedSounds.map(s => s.id));
       return prevButtonSounds.map(sound => {
         if (sound && !selectedIds.has(sound.id)) {
@@ -33,7 +33,7 @@ export default function MixerScreen() {
         }
         return sound;
       });
-    }); */
+    });
   }, [selectedSounds]);
 
   const handleSoundChange = (buttonIndex) => {
@@ -69,7 +69,7 @@ export default function MixerScreen() {
   };
 
   // Encuentra el primer índice disponible en buttonSounds (micRecButton)
-  const getFirstAvailableIndex = () => buttonSounds.findIndex((s) => !s);
+/*   const getFirstAvailableIndex = () => buttonSounds.findIndex((s) => !s); */
 
   const renderPad = ({ item: soundData, index }) => (
     <View style={styles.buttonContainer}>
@@ -108,20 +108,13 @@ export default function MixerScreen() {
         </View>
 
         <View>
-          <MicRecButton handleNewRecordedSound={(sound) => {
-            setButtonSounds((prev) => {
-              const updated = [...prev];
-              const index = getFirstAvailableIndex();
-              if (index !== -1) updated[index] = sound;
-              return updated;
-            });
-          }} />
+          <MicRecButton handleNewRecordedSound={() => {}} />
         </View>
 
         <FlatList
           data={buttonSounds}
           renderItem={renderPad}
-          keyExtractor={(_, i) => i.toString()}
+          keyExtractor={(item, index) => item?.id || index.toString()}
           //numColumns={COLS}
           horizontal={true}
           scrollEnabled={true}
